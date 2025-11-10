@@ -10,6 +10,7 @@
 
     <!-- Firebase SDK Scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script> <!-- নতুন: Auth SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
@@ -32,8 +33,101 @@
             color: var(--text-dark);
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            padding-top: 80px; /* ন্যাভিগেশন বারের জন্য স্পেস */
+            padding-top: 70px; /* পরিবর্তিত: ন্যাভিগেশন বারের জন্য স্পেস */
             padding-bottom: 80px;
+        }
+
+        /* --- নতুন: অথেন্টিকেশন পেজ স্টাইল --- */
+        #auth-page {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            padding-top: 0; /* No padding top for auth page */
+        }
+        .auth-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 40px 30px;
+            background: var(--white-color);
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(65, 87, 128, 0.1);
+        }
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .auth-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+        .auth-subtitle {
+            font-size: 15px;
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+        .auth-form .form-group {
+            margin-bottom: 20px;
+        }
+        .auth-form label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        .auth-form input {
+            width: 100%;
+            padding: 12px 16px;
+            background: #F8FAFC;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            transition: all .3s ease;
+        }
+        .auth-form input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+        }
+        .auth-btn {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            background-image: linear-gradient(to right, var(--primary-blue) 0%, var(--primary-blue-dark) 51%, var(--primary-blue) 100%);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .auth-btn:hover {
+            background-position: right center;
+        }
+        .auth-toggle {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 14px;
+            color: var(--text-light);
+        }
+        .auth-toggle a {
+            color: var(--primary-blue);
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .auth-toggle a:hover {
+            text-decoration: underline;
+        }
+        #auth-error-message {
+            color: var(--danger-red);
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 14px;
+            display: none;
         }
 
         /* ন্যাভিগেশন বার স্টাইল */
@@ -42,7 +136,7 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 60px;
+            height: 55px; /* পরিবর্তিত: উচ্চতা কমানো হয়েছে */
             background: linear-gradient(to right, var(--primary-blue), var(--primary-blue-dark));
             color: white;
             z-index: 1001;
@@ -56,17 +150,17 @@
             display: flex;
             align-items: center;
             height: 100%;
-            padding: 0 20px;
+            padding: 0 15px; /* পরিবর্তিত */
             max-width: 900px;
             margin: 0 auto;
         }
         .nav-logo {
-            height: 40px;
-            margin-right: 15px;
+            height: 36px; /* পরিবর্তিত */
+            margin-right: 12px; /* পরিবর্তিত */
             border-radius: 6px;
         }
         .nav-title {
-            font-size: 18px;
+            font-size: 17px; /* পরিবর্তিত */
             font-weight: 600;
             margin: 0;
             flex-grow: 1;
@@ -77,9 +171,9 @@
             display: flex !important;
             align-items: center;
             justify-content: center;
-            width: 40px;
-            height: 40px;
-            font-size: 24px;
+            width: 38px; /* পরিবর্তিত */
+            height: 38px; /* পরিবর্তিত */
+            font-size: 22px; /* পরিবর্তিত */
             color: white;
             cursor: pointer;
             margin-right: 15px;
@@ -618,7 +712,7 @@
             border-radius: 12px;
             padding: 15px 20px;
             margin-bottom: 12px;
-            cursor: pointer;
+            cursor: default; /* ডিফল্ট কার্সার */
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -949,9 +1043,9 @@
             align-items: center;
             box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
             z-index: 999;
-            transition: transform 0.3s ease; /* নতুন পরিবর্তন */
+            transition: transform 0.3s ease;
         }
-        /* নতুন পরিবর্তন */
+        
         .bottom-nav.hidden {
             transform: translateY(100%);
         }
@@ -983,23 +1077,16 @@
         
         /* --- [নতুন যোগ করা হয়েছে] প্রিন্ট করার জন্য বিশেষ স্টাইল --- */
         @media print {
-            /* প্রিন্ট করার সময় অ্যাপের সকল অপ্রয়োজনীয় অংশ লুকিয়ে ফেলা হবে */
             .navbar, .sidenav, .bottom-nav, .fab-add, #preview-page .header-bar {
                 display: none !important;
             }
-
-            /* মূল কন্টেন্ট এরিয়াগুলোও প্রিন্ট থেকে বাদ দেওয়া হবে */
             #main-content, #history-page, #shop-page, #home-page {
                 display: none !important;
             }
-            
-            /* শুধুমাত্র প্রিভিউ পেজটি প্রিন্টে দেখানো হবে */
             #preview-page {
                 display: block !important;
                 visibility: visible !important;
             }
-
-            /* প্রিন্টের জন্য পুরো পৃষ্ঠা জুড়ে মেমোটি সেট করা হবে */
             body, html {
                 margin: 0 !important;
                 padding: 0 !important;
@@ -1015,254 +1102,302 @@
                 width: 100% !important;
                 border-radius: 0 !important;
             }
-
-            /* মেমোর কন্টেন্ট যেন সঠিকভাবে প্রিন্ট হয় */
             #memo-content-for-print {
                 border: none !important;
                 padding: 0 !important;
             }
         }
+
+        /* প্রাথমিকভাবে অ্যাপের মূল অংশ লুকানো থাকবে */
+        .main-app-container {
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <!-- ন্যাভিগেশন বার -->
-    <div class="navbar" id="navbar">
-        <div class="nav-container">
-            <span class="menu-btn" onclick="openNav()">&#9776;</span>
-            <img src="https://i.ibb.co/fYwdd8h/IMG-20251107-WA0006.jpg" alt="Shop Logo" class="nav-logo">
-            <h1 class="nav-title">আব্দুল্লাহ ইলেকট্রিক</h1>
+    
+    <!-- নতুন: অথেন্টিকেশন পেজ -->
+    <div id="auth-page">
+        <div class="auth-container">
+            <!-- Login Form -->
+            <div id="login-form">
+                <div class="auth-header">
+                    <h1 class="auth-title">স্বাগতম!</h1>
+                    <p class="auth-subtitle">আপনার অ্যাকাউন্টে লগইন করুন</p>
+                </div>
+                <form class="auth-form" onsubmit="handleSignIn(event)">
+                    <p id="auth-error-message"></p>
+                    <div class="form-group">
+                        <label for="login-email">ইমেইল</label>
+                        <input type="email" id="login-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">পাসওয়ার্ড</label>
+                        <input type="password" id="login-password" required>
+                    </div>
+                    <button type="submit" class="auth-btn">লগইন</button>
+                </form>
+                <div class="auth-toggle">
+                    কোনো অ্যাকাউন্ট নেই? <a onclick="toggleAuthForms()">নিবন্ধন করুন</a>
+                </div>
+            </div>
+
+            <!-- Registration Form -->
+            <div id="register-form" style="display: none;">
+                <div class="auth-header">
+                    <h1 class="auth-title">অ্যাকাউন্ট তৈরি করুন</h1>
+                    <p class="auth-subtitle">শুরু করতে আপনার তথ্য দিন</p>
+                </div>
+                <form class="auth-form" onsubmit="handleSignUp(event)">
+                    <div class="form-group">
+                        <label for="register-email">ইমেইল</label>
+                        <input type="email" id="register-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">পাসওয়ার্ড</label>
+                        <input type="password" id="register-password" required minlength="6">
+                    </div>
+                    <button type="submit" class="auth-btn">নিবন্ধন</button>
+                </form>
+                <div class="auth-toggle">
+                    ইতিমধ্যে একটি অ্যাকাউন্ট আছে? <a onclick="toggleAuthForms()">লগইন করুন</a>
+                </div>
+            </div>
         </div>
     </div>
-    
-    <div id="mySidenav" class="sidenav">
-        <div class="sidenav-header">
-            <span>মেনু</span>
-            <a href="javascript:void(0)" class="close-btn" onclick="closeNav()">&times;</a>
+
+    <!-- অ্যাপের মূল কন্টেইনার -->
+    <div class="main-app-container">
+        <!-- ন্যাভিগেশন বার -->
+        <div class="navbar" id="navbar">
+            <div class="nav-container">
+                <span class="menu-btn" onclick="openNav()">&#9776;</span>
+                <img src="https://i.ibb.co/fYwdd8h/IMG-20251107-WA0006.jpg" alt="Shop Logo" class="nav-logo">
+                <h1 class="nav-title">আব্দুল্লাহ ইলেকট্রিক</h1>
+            </div>
         </div>
-        <a href="#" id="side-home-btn">🏠 <span>হোম</span></a>
-        <a href="#" id="side-new-memo-btn">➕ <span>নতুন মেমো</span></a>
-        <a href="#" id="side-show-history-btn">📜 <span>মেমোর ইতিহাস</span></a>
         
-        <hr class="sidenav-divider">
-        <a href="#" id="side-shop-btn">🏪 <span>আমাদের দোকান</span></a>
-        <a href="#" id="side-privacy-btn">🔒 <span>গোপনীয়তা নীতি</span></a>
-
-        <div class="sidenav-footer">
-            সংস্করণ ১.১২
-        </div>
-    </div>
-
-    <!-- হোম পেজ -->
-    <div id="home-page">
-        <div class="home-container">
-            <!-- 16:9 রেশিও স্লাইডার - একদম উপরে -->
-            <div class="slider-section">
-                <div class="slider-container">
-                    <div class="slider">
-                        <div class="slides" id="slides">
-                            <div class="slide">
-                                <img src="https://images.unsplash.com/photo-1563013541-314ef36ad4fc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZWxlY3RyaWNhbCUyMGFwcGxpYW5jZXN8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=1200&q=80" alt="ইলেকট্রিক আইটেম" class="slide-image">
-                                <div class="slide-content">
-                                    <div class="slide-title">ইলেকট্রনিক আইটেম</div>
-                                    <div class="slide-desc">সকল প্রকার ইলেকট্রনিক সামগ্রী</div>
-                                </div>
-                            </div>
-                            <div class="slide">
-                                <img src="https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8ZWxlY3RyaWNhbCUyMGRldmljZXN8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=1200&q=80" alt="ইলেকট্রিক ডিভাইস" class="slide-image">
-                                <div class="slide-content">
-                                    <div class="slide-title">ইলেকট্রিক ডিভাইস</div>
-                                    <div class="slide-desc">আধুনিক ইলেকট্রিক যন্ত্রপাতি</div>
-                                </div>
-                            </div>
-                            <div class="slide">
-                                <img src="https://images.unsplash.com/photo-1581093458791-8a0a1ed12789?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGVsZWN0cmljYWwlMjBkZXZpY2VzfGVufDB8fDB8fHww&auto=format&fit=crop&w=1200&q=80" alt="সার্ভিস" class="slide-image">
-                                <div class="slide-content">
-                                    <div class="slide-title">পেশাদার সার্ভিস</div>
-                                    <div class="slide-desc">বিশেষজ্ঞ টেকনিশিয়ান দ্বারা সার্ভিস</div>
-                                </div>
-                            </div>
-                            <div class="slide">
-                                <img src="https://images.unsplash.com/photo-1558618666-fcd25856cd25?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGVsZWN0cmljYWwlMjBkZXZpY2VzfGVufDB8fDB8fHww&auto=format&fit=crop&w=1200&q=80" alt="সাপোর্ট" class="slide-image">
-                                <div class="slide-content">
-                                    <div class="slide-title">২৪/৭ সাপোর্ট</div>
-                                    <div class="slide-desc">যেকোনো সমস্যায় আমরা আছি আপনার পাশে</div>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="slider-arrow prev" onclick="prevSlide()">❮</button>
-                        <button class="slider-arrow next" onclick="nextSlide()">❯</button>
-                        <div class="slider-nav" id="slider-nav">
-                            <!-- নেভিগেশন ডটস ডাইনামিকভাবে যোগ হবে -->
-                        </div>
-                    </div>
-                </div>
+        <div id="mySidenav" class="sidenav">
+            <div class="sidenav-header">
+                <span>মেনু</span>
+                <a href="javascript:void(0)" class="close-btn" onclick="closeNav()">&times;</a>
             </div>
-
-            <div class="welcome-section">
-                <h1 class="welcome-title">আব্দুল্লাহ ইলেকট্রিক</h1>
-                <p class="welcome-subtitle">আপনার ব্যবসায়িক হিসাব ব্যবস্থাপনা সহজ করুন</p>
-                <div class="quick-stats" id="home-stats">
-                    <!-- স্ট্যাটিস্টিক্স ডাইনামিকভাবে লোড হবে -->
-                </div>
-            </div>
-
-            <div class="quick-actions">
-                <div class="action-card" onclick="showMemoPage()">
-                    <span class="action-icon">📊</span>
-                    <div class="action-title">নতুন মেমো</div>
-                    <div class="action-desc">দ্রুত বিল তৈরি করুন</div>
-                </div>
-                <div class="action-card" onclick="showHistoryPage()">
-                    <span class="action-icon">📜</span>
-                    <div class="action-title">মেমো ইতিহাস</div>
-                    <div class="action-desc">পূর্বের সকল বিল দেখুন</div>
-                </div>
-                <div class="action-card" onclick="showShopPage()">
-                    <span class="action-icon">🏪</span>
-                    <div class="action-title">দোকান ব্যবস্থাপনা</div>
-                    <div class="action-desc">দোকান যোগ ও সম্পাদনা</div>
-                </div>
-                <div class="action-card" onclick="resetForm(); showMemoPage();">
-                    <span class="action-icon">⚡</span>
-                    <div class="action-title">দ্রুত শুরু</div>
-                    <div class="action-desc">নতুন বিল তৈরি করুন</div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- নতুন প্রিভিউ পেজ -->
-    <div id="preview-page" style="display: none;">
-        <!-- মেমো প্রিভিউ এখানে ডাইনামিকভাবে লোড হবে -->
-    </div>
-
-    <div id="main-content" style="display: none;">
-        <div class="container">
-            <div class="header-bar">
-                <img src="https://i.ibb.co/fYwdd8h/IMG-20251107-WA0006.jpg" alt="Shop Logo" class="header-logo" id="main-header-logo">
-                <h1 id="main-header-title">বিল ম্যানেজমেন্ট সিস্টেম</h1>
-            </div>
-
-            <!-- লোগো সহ কাস্টম ড্রপডাউন -->
-            <div class="shop-dropdown">
-                <div class="custom-dropdown" id="shop-custom-dropdown">
-                    <div class="custom-dropdown-select" id="shop-dropdown-select">
-                        <div class="custom-dropdown-selected">
-                            <span id="selected-shop-text">দোকান নির্বাচন করুন...</span>
-                        </div>
-                        <svg class="custom-dropdown-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
-                    </div>
-                    <div class="custom-dropdown-options" id="shop-dropdown-options">
-                        <!-- Options will be populated dynamically -->
-                    </div>
-                </div>
-            </div>
-
-            <div class="customer-info">
-                <input type="text" id="memo-no" placeholder="মেমো নং">
-                <input type="text" id="customer-name" placeholder="ক্রেতার নাম">
-                <input type="text" id="customer-address" placeholder="ক্রেতার ঠিকানা" class="full-width">
-                <div class="date-field">
-                    <label for="transaction-date">তারিখ</label>
-                    <input type="date" id="transaction-date" title="লেনদেনের তারিখ">
-                </div>
-                <div class="date-field">
-                    <label for="delivery-date">ডেলিভারি তারিখ</label>
-                    <input type="date" id="delivery-date" title="ডেলিভারি তারিখ">
-                </div>
-            </div>
-
-            <div class="table-wrapper">
-                <table id="bill-table">
-                    <thead>
-                        <tr>
-                            <th>নং</th><th>বিবরণ</th><th>পরিমাণ</th><th>দর</th><th>টাকা</th><th>মুছুন</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-            <button class="btn btn-add" onclick="addRow()">+ নতুন পণ্য যোগ করুন</button>
-            <div class="totals-container">
-                <table class="totals-table">
-                    <tbody>
-                        <tr><td>মোট</td><td class="text-right" id="grand-total">0.00</td></tr>
-                        <tr><td>অগ্রিম</td><td><input type="number" id="advance" value="0" min="0" oninput="calculateTotals()" style="text-align:right; width: 120px; padding: 8px;"></td></tr>
-                        <tr><td><strong>বাকি</strong></td><td class="text-right" id="due"><strong>0.00</strong></td></tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="clearfix"></div>
-            <button class="btn btn-print" id="print-save-btn" onclick="saveAndShowPreview()">সংরক্ষণ ও প্রিভিউ দেখুন 📄</button>
-        </div>
-    </div>
-
-    <div id="history-page" style="display: none;">
-        <div class="container">
-            <div class="header-bar">
-                 <h1 id="history-page-title">সংরক্ষিত মেমোর তালিকা</h1>
-            </div>
-            <!-- ইতিহাস পেজের জন্য ড্রপডাউন -->
-            <div class="shop-dropdown">
-                <div class="custom-dropdown" id="history-custom-dropdown">
-                    <div class="custom-dropdown-select" id="history-dropdown-select">
-                        <div class="custom-dropdown-selected">
-                            <span id="selected-history-shop-text">সকল দোকান</span>
-                        </div>
-                        <svg class="custom-dropdown-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
-                    </div>
-                    <div class="custom-dropdown-options" id="history-dropdown-options">
-                        <!-- Options will be populated dynamically -->
-                    </div>
-                </div>
-            </div>
-            <ul id="history-list"></ul>
-        </div>
-        <button class="fab-add" id="fab-add-memo">+</button>
-    </div>
-
-    <!-- === দোকান ব্যবস্থাপনা পেজ === -->
-    <div id="shop-page" style="display: none;">
-        <div class="container">
-            <div class="header-bar">
-                <h1>দোকান ব্যবস্থাপনা</h1>
-            </div>
+            <a href="#" id="side-home-btn">🏠 <span>হোম</span></a>
+            <a href="#" id="side-new-memo-btn">➕ <span>নতুন মেমো</span></a>
+            <a href="#" id="side-show-history-btn">📜 <span>মেমোর ইতিহাস</span></a>
             
-            <div class="shop-management-section">
-                <div class="shop-management-header">
-                    <h2 class="shop-management-title">আপনার দোকানসমূহ</h2>
-                    <button class="btn btn-add" onclick="openAddShopModal()">+ নতুন দোকান</button>
+            <hr class="sidenav-divider">
+            <a href="#" id="side-shop-btn">🏪 <span>আমাদের দোকান</span></a>
+            <a href="#" id="side-privacy-btn">🔒 <span>গোপনীয়তা নীতি</span></a>
+            <a href="#" id="side-logout-btn">🚪 <span>লগআউট</span></a> <!-- নতুন: লগআউট বাটন -->
+
+            <div class="sidenav-footer">
+                সংস্করণ ১.১৩
+            </div>
+        </div>
+
+        <!-- হোম পেজ -->
+        <div id="home-page">
+            <div class="home-container">
+                <!-- 16:9 রেশিও স্লাইডার - একদম উপরে -->
+                <div class="slider-section">
+                    <div class="slider-container">
+                        <div class="slider">
+                            <div class="slides" id="slides">
+                                <div class="slide">
+                                    <img src="https://images.unsplash.com/photo-1563013541-314ef36ad4fc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZWxlY3RyaWNhbCUyMGFwcGxpYW5jZXN8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=1200&q=80" alt="ইলেকট্রিক আইটেম" class="slide-image">
+                                    <div class="slide-content">
+                                        <div class="slide-title">ইলেকট্রনিক আইটেম</div>
+                                        <div class="slide-desc">সকল প্রকার ইলেকট্রনিক সামগ্রী</div>
+                                    </div>
+                                </div>
+                                <div class="slide">
+                                    <img src="https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8ZWxlY3RyaWNhbCUyMGRldmljZXN8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=1200&q=80" alt="ইলেকট্রিক ডিভাইস" class="slide-image">
+                                    <div class="slide-content">
+                                        <div class="slide-title">ইলেকট্রিক ডিভাইস</div>
+                                        <div class="slide-desc">আধুনিক ইলেকট্রিক যন্ত্রপাতি</div>
+                                    </div>
+                                </div>
+                                <div class="slide">
+                                    <img src="https://images.unsplash.com/photo-1581093458791-8a0a1ed12789?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGVsZWN0cmljYWwlMjBkZXZpY2VzfGVufDB8fDB8fHww&auto=format&fit=crop&w=1200&q=80" alt="সার্ভিস" class="slide-image">
+                                    <div class="slide-content">
+                                        <div class="slide-title">পেশাদার সার্ভিস</div>
+                                        <div class="slide-desc">বিশেষজ্ঞ টেকনিশিয়ান দ্বারা সার্ভিস</div>
+                                    </div>
+                                </div>
+                                <div class="slide">
+                                    <img src="https://images.unsplash.com/photo-1558618666-fcd25856cd25?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGVsZWN0cmljYWwlMjBkZXZpY2VzfGVufDB8fDB8fHww&auto=format&fit=crop&w=1200&q=80" alt="সাপোর্ট" class="slide-image">
+                                    <div class="slide-content">
+                                        <div class="slide-title">২৪/৭ সাপোর্ট</div>
+                                        <div class="slide-desc">যেকোনো সমস্যায় আমরা আছি আপনার পাশে</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="slider-arrow prev" onclick="prevSlide()">❮</button>
+                            <button class="slider-arrow next" onclick="nextSlide()">❯</button>
+                            <div class="slider-nav" id="slider-nav">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="welcome-section">
+                    <h1 class="welcome-title">আব্দুল্লাহ ইলেকট্রিক</h1>
+                    <p class="welcome-subtitle">আপনার ব্যবসায়িক হিসাব ব্যবস্থাপনা সহজ করুন</p>
+                    <div class="quick-stats" id="home-stats">
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <div class="action-card" onclick="showMemoPage()">
+                        <span class="action-icon">📊</span>
+                        <div class="action-title">নতুন মেমো</div>
+                        <div class="action-desc">দ্রুত বিল তৈরি করুন</div>
+                    </div>
+                    <div class="action-card" onclick="showHistoryPage()">
+                        <span class="action-icon">📜</span>
+                        <div class="action-title">মেমো ইতিহাস</div>
+                        <div class="action-desc">পূর্বের সকল বিল দেখুন</div>
+                    </div>
+                    <div class="action-card" onclick="showShopPage()">
+                        <span class="action-icon">🏪</span>
+                        <div class="action-title">দোকান ব্যবস্থাপনা</div>
+                        <div class="action-desc">দোকান যোগ ও সম্পাদনা</div>
+                    </div>
+                    <div class="action-card" onclick="resetForm(); showMemoPage();">
+                        <span class="action-icon">⚡</span>
+                        <div class="action-title">দ্রুত শুরু</div>
+                        <div class="action-desc">নতুন বিল তৈরি করুন</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="preview-page" style="display: none;">
+        </div>
+
+        <div id="main-content" style="display: none;">
+            <div class="container">
+                <div class="header-bar">
+                    <img src="https://i.ibb.co/fYwdd8h/IMG-20251107-WA0006.jpg" alt="Shop Logo" class="header-logo" id="main-header-logo">
+                    <h1 id="main-header-title">বিল ম্যানেজমেন্ট সিস্টেম</h1>
+                </div>
+
+                <div class="shop-dropdown">
+                    <div class="custom-dropdown" id="shop-custom-dropdown">
+                        <div class="custom-dropdown-select" id="shop-dropdown-select">
+                            <div class="custom-dropdown-selected">
+                                <span id="selected-shop-text">দোকান নির্বাচন করুন...</span>
+                            </div>
+                            <svg class="custom-dropdown-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                        <div class="custom-dropdown-options" id="shop-dropdown-options">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="customer-info">
+                    <input type="text" id="memo-no" placeholder="মেমো নং">
+                    <input type="text" id="customer-name" placeholder="ক্রেতার নাম">
+                    <input type="text" id="customer-address" placeholder="ক্রেতার ঠিকানা" class="full-width">
+                    <div class="date-field">
+                        <label for="transaction-date">তারিখ</label>
+                        <input type="date" id="transaction-date" title="লেনদেনের তারিখ">
+                    </div>
+                    <div class="date-field">
+                        <label for="delivery-date">ডেলিভারি তারিখ</label>
+                        <input type="date" id="delivery-date" title="ডেলিভারি তারিখ">
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <table id="bill-table">
+                        <thead>
+                            <tr>
+                                <th>নং</th><th>বিবরণ</th><th>পরিমাণ</th><th>দর</th><th>টাকা</th><th>মুছুন</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <button class="btn btn-add" onclick="addRow()">+ নতুন পণ্য যোগ করুন</button>
+                <div class="totals-container">
+                    <table class="totals-table">
+                        <tbody>
+                            <tr><td>মোট</td><td class="text-right" id="grand-total">0.00</td></tr>
+                            <tr><td>অগ্রিম</td><td><input type="number" id="advance" value="0" min="0" oninput="calculateTotals()" style="text-align:right; width: 120px; padding: 8px;"></td></tr>
+                            <tr><td><strong>বাকি</strong></td><td class="text-right" id="due"><strong>0.00</strong></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="clearfix"></div>
+                <button class="btn btn-print" id="print-save-btn" onclick="saveAndShowPreview()">সংরক্ষণ ও প্রিভিউ দেখুন 📄</button>
+            </div>
+        </div>
+
+        <div id="history-page" style="display: none;">
+            <div class="container">
+                <div class="header-bar">
+                     <h1 id="history-page-title">সংরক্ষিত মেমোর তালিকা</h1>
+                </div>
+                <div class="shop-dropdown">
+                    <div class="custom-dropdown" id="history-custom-dropdown">
+                        <div class="custom-dropdown-select" id="history-dropdown-select">
+                            <div class="custom-dropdown-selected">
+                                <span id="selected-history-shop-text">সকল দোকান</span>
+                            </div>
+                            <svg class="custom-dropdown-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                        <div class="custom-dropdown-options" id="history-dropdown-options">
+                        </div>
+                    </div>
+                </div>
+                <ul id="history-list"></ul>
+            </div>
+            <button class="fab-add" id="fab-add-memo">+</button>
+        </div>
+
+        <div id="shop-page" style="display: none;">
+            <div class="container">
+                <div class="header-bar">
+                    <h1>দোকান ব্যবস্থাপনা</h1>
                 </div>
                 
-                <div id="shop-list-container" class="shop-list">
-                    <!-- দোকানের তালিকা এখানে লোড হবে -->
+                <div class="shop-management-section">
+                    <div class="shop-management-header">
+                        <h2 class="shop-management-title">আপনার দোকানসমূহ</h2>
+                        <button class="btn btn-add" onclick="openAddShopModal()">+ নতুন দোকান</button>
+                    </div>
+                    
+                    <div id="shop-list-container" class="shop-list">
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    
-    <div class="bottom-nav">
-        <a href="#" class="nav-item active" id="bottom-nav-home">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-            <span>হোম</span>
-        </a>
-        <a href="#" class="nav-item" id="bottom-nav-memo">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-            <span>মেমো</span>
-        </a>
-        <a href="#" class="nav-item" id="bottom-nav-history">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-            <span>লিস্ট</span>
-        </a>
-        <a href="#" class="nav-item" id="bottom-nav-shop">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-            <span>দোকান</span>
-        </a>
-    </div>
+        
+        <div class="bottom-nav">
+            <a href="#" class="nav-item active" id="bottom-nav-home">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                <span>হোম</span>
+            </a>
+            <a href="#" class="nav-item" id="bottom-nav-memo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                <span>মেমো</span>
+            </a>
+            <a href="#" class="nav-item" id="bottom-nav-history">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                <span>লিস্ট</span>
+            </a>
+            <a href="#" class="nav-item" id="bottom-nav-shop">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                <span>দোকান</span>
+            </a>
+        </div>
+    </div> <!-- .main-app-container শেষ -->
 
     <!-- Modals -->
     <div id="shopEditModal" class="modal">
@@ -1298,14 +1433,14 @@
             <div class="modal-body">
                 <p>আমরা আপনার তথ্যের গোপনীয়তাকে সম্মান করি। এই অ্যাপটি ব্যবহার করার সময় আপনার প্রদান করা সকল তথ্য সুরক্ষিত রাখা আমাদের দায়িত্ব।</p>
                 <h3>কোন তথ্য সংগ্রহ করা হয়?</h3>
-                <p>এই অ্যাপটি শুধুমাত্র আপনার তৈরি করা বিলের তথ্য সংরক্ষণ করে, যার মধ্যে অন্তর্ভুক্ত থাকতে পারে:</p>
+                <p>এই অ্যাপটি আপনার অ্যাকাউন্টের অধীনে শুধুমাত্র আপনার তৈরি করা বিলের তথ্য সংরক্ষণ করে, যার মধ্যে অন্তর্ভুক্ত থাকতে পারে:</p>
                 <ul>
                     <li>মেমো নম্বর, ক্রেতার নাম এবং ঠিকানা।</li>
                     <li>লেনদেনের তারিখ এবং ডেলিভারির তারিখ।</li>
                     <li>পণ্যের বিবরণ, পরিমাণ, দর এবং মোট টাকার হিসাব।</li>
                 </ul>
                 <h3>কীভাবে তথ্য ব্যবহার করা হয়?</h3>
-                <p>আপনার সংরক্ষিত বিলের তথ্য শুধুমাত্র আপনার ব্যবসায়িক হিসাব ব্যবস্থাপনার জন্য ব্যবহার করা হয়। এই তথ্য অন্য কোনো ব্যক্তি বা প্রতিষ্ঠানের সাথে শেয়ার করা হয় না। সকল তথ্য Google Firebase-এর সুরক্ষিত ডাটাবেসে সংরক্ষণ করা হয়, যা শুধুমাত্র আপনিই অ্যাক্সেস করতে পারেন।</p>
+                <p>আপনার সংরক্ষিত বিলের তথ্য শুধুমাত্র আপনার ব্যবসায়িক হিসাব ব্যবস্থাপনার জন্য ব্যবহার করা হয়। এই তথ্য অন্য কোনো ব্যক্তি বা প্রতিষ্ঠানের সাথে শেয়ার করা হয় না। সকল তথ্য Google Firebase-এর সুরক্ষিত ডাটাবেসে আপনার ব্যক্তিগত অ্যাকাউন্টের অধীনে সংরক্ষণ করা হয়, যা শুধুমাত্র আপনিই অ্যাক্সেস করতে পারেন।</p>
                 <p>আমরা আপনার তথ্যের নিরাপত্তা নিশ্চিত করতে প্রতিশ্রুতিবদ্ধ।</p>
             </div>
         </div>
@@ -1325,30 +1460,125 @@
         
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth(); // নতুন
         const database = firebase.database();
         
         // Global variables
+        let currentUserId = null; // নতুন: বর্তমান ব্যবহারকারীর আইডি সংরক্ষণের জন্য
         let currentlyEditing = null;
         let selectedShopId = null;
         let shops = {};
         let currentSlide = 0;
         let slideInterval;
 
+        // --- নতুন: অথেন্টিকেশন ফাংশন ---
+        const authPage = document.getElementById('auth-page');
+        const mainAppContainer = document.querySelector('.main-app-container');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const authErrorMessage = document.getElementById('auth-error-message');
+
+        function toggleAuthForms() {
+            authErrorMessage.style.display = 'none';
+            if (loginForm.style.display === 'none') {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+            } else {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+            }
+        }
+
+        function handleSignUp(event) {
+            event.preventDefault();
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            
+            auth.createUserWithEmailAndPassword(email, password)
+                .catch(error => {
+                    console.error("Sign up error:", error);
+                    authErrorMessage.textContent = error.message;
+                    authErrorMessage.style.display = 'block';
+                });
+        }
+
+        function handleSignIn(event) {
+            event.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            auth.signInWithEmailAndPassword(email, password)
+                .catch(error => {
+                    console.error("Sign in error:", error);
+                    let message = "একটি ত্রুটি ঘটেছে।";
+                    if (error.code === 'auth/user-not-found') {
+                        message = "এই ইমেইল দিয়ে কোনো অ্যাকাউন্ট পাওয়া যায়নি।";
+                    } else if (error.code === 'auth/wrong-password') {
+                        message = "ভুল পাসওয়ার্ড। অনুগ্রহ করে আবার চেষ্টা করুন।";
+                    }
+                    authErrorMessage.textContent = message;
+                    authErrorMessage.style.display = 'block';
+                });
+        }
+
+        function handleSignOut() {
+            auth.signOut().catch(error => console.error("Sign out error:", error));
+        }
+
+        // --- Auth State Observer ---
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // User is signed in
+                currentUserId = user.uid; // ব্যবহারকারীর আইডি সংরক্ষণ
+                authPage.style.display = 'none';
+                document.body.style.paddingTop = '70px'; // Restore padding for main app
+                mainAppContainer.style.display = 'block';
+                
+                // অ্যাপ চালু করা
+                initializeApp();
+            } else {
+                // User is signed out
+                currentUserId = null;
+                authPage.style.display = 'flex';
+                document.body.style.paddingTop = '0'; // Remove padding for auth page
+                mainAppContainer.style.display = 'none';
+                stopSlider(); // Stop slider if user logs out
+            }
+        });
+
+        // --- Main App Initialization ---
+        function initializeApp() {
+            initializeCustomDropdowns();
+            fetchShops();
+            initSlider();
+            resetForm(); 
+            showHomeDashboard();
+            
+            const today = new Date().toISOString().split('T')[0];
+            const transactionDate = document.getElementById('transaction-date');
+            const deliveryDate = document.getElementById('delivery-date');
+            
+            if (transactionDate) transactionDate.value = today;
+            if (deliveryDate) deliveryDate.value = today;
+            
+            addRow();
+        }
+
         // --- ন্যাভিগেশন বার অটো-হাইড ফাংশন ---
         let lastScrollTop = 0;
         const navbar = document.getElementById('navbar');
-        const bottomNav = document.querySelector('.bottom-nav'); // নতুন পরিবর্তন
-        const scrollThreshold = 100; // কত স্ক্রল করলে হাইড হবে
+        const bottomNav = document.querySelector('.bottom-nav');
+        const scrollThreshold = 100;
 
         function handleNavbarScroll() {
             const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
             
             if (scrollTop > lastScrollTop && scrollTop > scrollThreshold) {
                 navbar.classList.add('hidden');
-                if (bottomNav) bottomNav.classList.add('hidden'); // নতুন পরিবর্তন
+                if (bottomNav) bottomNav.classList.add('hidden');
             } else {
                 navbar.classList.remove('hidden');
-                if (bottomNav) bottomNav.classList.remove('hidden'); // নতুন পরিবর্তন
+                if (bottomNav) bottomNav.classList.remove('hidden');
             }
             
             lastScrollTop = scrollTop;
@@ -1371,22 +1601,22 @@
         function handleTouchScroll() {
             if (touchStartY - touchEndY > 50) { // Scrolling down
                 navbar.classList.add('hidden');
-                if (bottomNav) bottomNav.classList.add('hidden'); // নতুন পরিবর্তন
+                if (bottomNav) bottomNav.classList.add('hidden');
             } else if (touchEndY - touchStartY > 50) { // Scrolling up
                 navbar.classList.remove('hidden');
-                if (bottomNav) bottomNav.classList.remove('hidden'); // নতুন পরিবর্তন
+                if (bottomNav) bottomNav.classList.remove('hidden');
             }
         }
 
         window.addEventListener('load', () => {
             navbar.classList.remove('hidden');
-            if (bottomNav) bottomNav.classList.remove('hidden'); // নতুন পরিবর্তন
+            if (bottomNav) bottomNav.classList.remove('hidden');
         });
 
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden) {
                 navbar.classList.remove('hidden');
-                if (bottomNav) bottomNav.classList.remove('hidden'); // নতুন পরিবর্তন
+                if (bottomNav) bottomNav.classList.remove('hidden');
             }
         });
 
@@ -1395,7 +1625,7 @@
         const historyPage = document.getElementById('history-page');
         const shopPage = document.getElementById('shop-page');
         const homePage = document.getElementById('home-page');
-        const previewPage = document.getElementById('preview-page'); // নতুন প্রিভিউ পেজ
+        const previewPage = document.getElementById('preview-page');
         const fabAddMemo = document.getElementById('fab-add-memo');
 
         function showHomeDashboard() {
@@ -1403,7 +1633,7 @@
             mainContent.style.display = 'none';
             historyPage.style.display = 'none';
             shopPage.style.display = 'none';
-            previewPage.style.display = 'none'; // প্রিভিউ পেজ হাইড করুন
+            previewPage.style.display = 'none';
             handleActiveNav('bottom-nav-home');
             loadHomeStats();
             startSlider();
@@ -1414,7 +1644,7 @@
             mainContent.style.display = 'block';
             historyPage.style.display = 'none';
             shopPage.style.display = 'none';
-            previewPage.style.display = 'none'; // প্রিভিউ পেজ হাইড করুন
+            previewPage.style.display = 'none';
             handleActiveNav('bottom-nav-memo');
             stopSlider();
         }
@@ -1424,7 +1654,7 @@
             mainContent.style.display = 'none';
             historyPage.style.display = 'block';
             shopPage.style.display = 'none';
-            previewPage.style.display = 'none'; // প্রিভিউ পেজ হাইড করুন
+            previewPage.style.display = 'none';
             if (fabAddMemo) {
                 fabAddMemo.style.display = showFabButton ? 'block' : 'none';
             }
@@ -1440,7 +1670,7 @@
             mainContent.style.display = 'none';
             historyPage.style.display = 'none';
             shopPage.style.display = 'block';
-            previewPage.style.display = 'none'; // প্রিভিউ পেজ হাইড করুন
+            previewPage.style.display = 'none';
             handleActiveNav('bottom-nav-shop');
             loadShopList();
             stopSlider();
@@ -1458,7 +1688,6 @@
         // --- SIDENAV FUNCTIONS ---
         function openNav() {
             document.getElementById("mySidenav").style.width = "280px";
-            // navbar এখন আর ব্লার হবে না
             const contentToBlur = document.querySelectorAll('#main-content, #history-page, #shop-page, #home-page, #preview-page, .bottom-nav, .fab-add');
             contentToBlur.forEach(el => {
                 if (el) el.classList.add('content-blur');
@@ -1467,7 +1696,6 @@
 
         function closeNav() {
             document.getElementById("mySidenav").style.width = "0";
-            // navbar এখন আর ব্লার হবে না
             const contentToBlur = document.querySelectorAll('#main-content, #history-page, #shop-page, #home-page, #preview-page, .bottom-nav, .fab-add');
             contentToBlur.forEach(el => {
                 if (el) el.classList.remove('content-blur');
@@ -1546,10 +1774,12 @@
 
         // --- হোম পেজ ফাংশন ---
         function loadHomeStats() {
+            if (!currentUserId) return; // ব্যবহারকারী লগইন না করলে কিছুই হবে না
+
             const statsContainer = document.getElementById('home-stats');
             if (!statsContainer) return;
             
-            const memosRef = database.ref('memos');
+            const memosRef = database.ref(`users/${currentUserId}/memos`); // পরিবর্তিত: ব্যবহারকারী-ভিত্তিক পাথ
             memosRef.once('value').then((snapshot) => {
                 let totalMemos = 0;
                 let totalRevenue = 0;
@@ -1645,34 +1875,40 @@
         
         // --- Shop Management Functions ---
         function fetchShops() {
-            const shopsRef = database.ref('shops');
+            if (!currentUserId) return; // ব্যবহারকারী লগইন না করলে কিছুই হবে না
+
+            const shopsRef = database.ref(`users/${currentUserId}/shops`); // পরিবর্তিত: ব্যবহারকারী-ভিত্তিক পাথ
             shopsRef.on('value', (snapshot) => {
+                shops = {}; // Reset shops object
                 if (snapshot.exists()) {
                     shops = snapshot.val();
-                    updateCustomDropdowns();
-                    
-                    if (!selectedShopId && Object.keys(shops).length > 0) {
-                        selectedShopId = Object.keys(shops)[0];
-                        updateUIWithShopInfo();
-                    }
                 } else {
-                    createDefaultShop();
+                    // যদি কোনো দোকান না থাকে, তাহলে ডিফল্ট একটি দোকান তৈরি করার অপশন রাখা যেতে পারে
+                    // createDefaultShop();
                 }
+                updateCustomDropdowns();
+                if (!selectedShopId && Object.keys(shops).length > 0) {
+                    selectedShopId = Object.keys(shops)[0];
+                }
+                updateUIWithShopInfo();
+                
             }, (error) => {
                 console.error("Error fetching shops:", error);
             });
         }
 
         function createDefaultShop() {
+            if (!currentUserId) return;
+
             const defaultShop = {
-                name: "অন্যান্য দোকান",
+                name: "আমার দোকান",
                 proprietor: "প্রোঃ",
                 details1: "বিবরণ এখানে লিখুন",
                 contact: "যোগাযোগঃ",
                 logoUrl: "https://i.ibb.co/fYwdd8h/IMG-20251107-WA0006.jpg"
             };
             
-            const newShopRef = database.ref('shops').push();
+            const newShopRef = database.ref(`users/${currentUserId}/shops`).push(); // পরিবর্তিত
             newShopRef.set(defaultShop)
                 .then(() => {
                     selectedShopId = newShopRef.key;
@@ -1697,18 +1933,6 @@
             
             dropdownOptions.innerHTML = '';
             
-            const defaultOption = document.createElement('div');
-            defaultOption.className = 'custom-dropdown-option';
-            defaultOption.innerHTML = `<div class="custom-dropdown-option-text"><div class="custom-dropdown-option-name">দোকান নির্বাচন করুন...</div></div>`;
-            defaultOption.onclick = () => {
-                selectedShopId = null;
-                selectedText.textContent = 'দোকান নির্বাচন করুন...';
-                const shopDropdown = document.getElementById('shop-custom-dropdown');
-                if (shopDropdown) shopDropdown.classList.remove('selected');
-                updateUIWithShopInfo();
-            };
-            dropdownOptions.appendChild(defaultOption);
-            
             for (const shopId in shops) {
                 const shop = shops[shopId];
                 const option = document.createElement('div');
@@ -1723,15 +1947,16 @@
                 option.onclick = () => {
                     selectedShopId = shopId;
                     selectedText.textContent = shop.name;
-                    const shopDropdown = document.getElementById('shop-custom-dropdown');
-                    if (shopDropdown) shopDropdown.classList.remove('selected');
+                    document.getElementById('shop-custom-dropdown').classList.remove('selected');
                     updateUIWithShopInfo();
                 };
                 dropdownOptions.appendChild(option);
-                
-                if (selectedShopId === shopId) {
-                    selectedText.textContent = shop.name;
-                }
+            }
+
+            if (selectedShopId && shops[selectedShopId]) {
+                selectedText.textContent = shops[selectedShopId].name;
+            } else {
+                selectedText.textContent = 'দোকান নির্বাচন করুন...';
             }
         }
 
@@ -1744,13 +1969,12 @@
             dropdownOptions.innerHTML = '';
             
             const allOption = document.createElement('div');
-            allOption.className = `custom-dropdown-option ${!selectedShopId ? 'selected' : ''}`;
+            allOption.className = `custom-dropdown-option`;
             allOption.innerHTML = `<div class="custom-dropdown-option-text"><div class="custom-dropdown-option-name">সকল দোকান</div></div>`;
             allOption.onclick = () => {
                 selectedShopId = null;
                 selectedText.textContent = 'সকল দোকান';
-                const historyDropdown = document.getElementById('history-custom-dropdown');
-                if (historyDropdown) historyDropdown.classList.remove('selected');
+                document.getElementById('history-custom-dropdown').classList.remove('selected');
                 displayHistory();
             };
             dropdownOptions.appendChild(allOption);
@@ -1758,7 +1982,7 @@
             for (const shopId in shops) {
                 const shop = shops[shopId];
                 const option = document.createElement('div');
-                option.className = `custom-dropdown-option ${selectedShopId === shopId ? 'selected' : ''}`;
+                option.className = `custom-dropdown-option`;
                 option.innerHTML = `
                     <img src="${shop.logoUrl}" alt="${shop.name}" class="custom-dropdown-option-logo" onerror="this.src='https://i.ibb.co/fYwdd8h/IMG-20251107-WA0006.jpg'">
                     <div class="custom-dropdown-option-text">
@@ -1769,15 +1993,10 @@
                 option.onclick = () => {
                     selectedShopId = shopId;
                     selectedText.textContent = shop.name;
-                    const historyDropdown = document.getElementById('history-custom-dropdown');
-                    if (historyDropdown) historyDropdown.classList.remove('selected');
+                    document.getElementById('history-custom-dropdown').classList.remove('selected');
                     displayHistory();
                 };
                 dropdownOptions.appendChild(option);
-                
-                if (selectedShopId === shopId) {
-                    selectedText.textContent = shop.name;
-                }
             }
         }
 
@@ -1791,7 +2010,6 @@
                     headerLogo.src = shop.logoUrl;
                     headerTitle.innerText = shop.name;
                 } else {
-                    // যখন কোনো দোকান সিলেক্ট করা থাকবে না, ডিফল্ট দেখাবে
                     headerLogo.src = "https://i.ibb.co/fYwdd8h/IMG-20251107-WA0006.jpg";
                     headerTitle.innerText = "বিল ম্যানেজমেন্ট সিস্টেম";
                 }
@@ -1862,8 +2080,9 @@
         }
 
         function deleteShop(shopId) {
+            if (!currentUserId) return;
             if (confirm('আপনি কি নিশ্চিতভাবে এই দোকানটি মুছতে চান? এই দোকানের সকল মেমোও মুছে যাবে।')) {
-                const memosRef = database.ref('memos');
+                const memosRef = database.ref(`users/${currentUserId}/memos`); // পরিবর্তিত
                 memosRef.once('value').then((snapshot) => {
                     const updates = {};
                     
@@ -1872,13 +2091,13 @@
                             dateSnapshot.forEach((memoSnapshot) => {
                                 const memo = memoSnapshot.val();
                                 if (memo.shopId === shopId) {
-                                    updates[`memos/${dateSnapshot.key}/${memoSnapshot.key}`] = null;
+                                    updates[`users/${currentUserId}/memos/${dateSnapshot.key}/${memoSnapshot.key}`] = null; // পরিবর্তিত
                                 }
                             });
                         });
                     }
                     
-                    updates[`shops/${shopId}`] = null;
+                    updates[`users/${currentUserId}/shops/${shopId}`] = null; // পরিবর্তিত
                     
                     return database.ref().update(updates);
                 }).then(() => {
@@ -1961,51 +2180,31 @@
                 }
             });
             
-            const memoNo = document.getElementById('memo-no');
-            const customerName = document.getElementById('customer-name');
-            const customerAddress = document.getElementById('customer-address');
-            const transactionDate = document.getElementById('transaction-date');
-            const deliveryDate = document.getElementById('delivery-date');
-            const advance = document.getElementById('advance');
-            const grandTotal = document.getElementById('grand-total');
-            const due = document.getElementById('due');
-            
             return {
-                memoNo: memoNo ? memoNo.value : '',
-                customerName: customerName ? customerName.value : '',
-                customerAddress: customerAddress ? customerAddress.value : '',
-                transactionDate: transactionDate ? transactionDate.value : '',
-                deliveryDate: deliveryDate ? deliveryDate.value : '',
-                advance: advance ? advance.value : '0',
+                memoNo: document.getElementById('memo-no').value,
+                customerName: document.getElementById('customer-name').value,
+                customerAddress: document.getElementById('customer-address').value,
+                transactionDate: document.getElementById('transaction-date').value,
+                deliveryDate: document.getElementById('delivery-date').value,
+                advance: document.getElementById('advance').value,
                 items: items,
-                grandTotal: grandTotal ? grandTotal.innerText : '0.00',
-                due: due ? due.innerText : '0.00',
+                grandTotal: document.getElementById('grand-total').innerText,
+                due: document.getElementById('due').innerText,
                 timestamp: Date.now(),
                 shopId: selectedShopId
             };
         }
         
         async function saveBillToHistory(){
+            if (!currentUserId) return false;
             const memo=collectMemoData();
-            
-            if(!memo.customerName&&!memo.memoNo){
-                alert('অনুগ্রহ করে মেমো নং অথবা ক্রেতার নাম লিখুন।');
-                return;
-            }
-            
+            if(!memo.customerName&&!memo.memoNo){ alert('অনুগ্রহ করে মেমো নং অথবা ক্রেতার নাম লিখুন।'); return false; }
             const formattedDate=memo.transactionDate;
-            if(!formattedDate){
-                alert('অনুগ্রহ করে লেনদেনের তারিখ নির্বাচন করুন।');
-                return;
-            }
-            
-            if(!memo.shopId){
-                alert('অনুগ্রহ করে একটি দোকান নির্বাচন করুন।');
-                return;
-            }
+            if(!formattedDate){ alert('অনুগ্রহ করে লেনদেনের তারিখ নির্বাচন করুন।'); return false; }
+            if(!memo.shopId){ alert('অনুগ্রহ করে একটি দোকান নির্বাচন করুন।'); return false; }
             
             try{
-                await database.ref('memos/'+formattedDate).push(memo);
+                await database.ref(`users/${currentUserId}/memos/${formattedDate}`).push(memo); // পরিবর্তিত
                 return true; 
             }catch(error){
                 console.error("Firebase save error: ",error);
@@ -2015,25 +2214,22 @@
         }
         
         async function updateBillInHistory(){
-            if(!currentlyEditing) return;
+            if(!currentlyEditing || !currentUserId) return false;
             
             const memo=collectMemoData();
             const newDate=memo.transactionDate;
-            if(!newDate){
-                alert('অনুগ্রহ করে লেনদেনের তারিখ নির্বাচন করুন।');
-                return;
-            }
+            if(!newDate){ alert('অনুগ্রহ করে লেনদেনের তারিখ নির্বাচন করুন।'); return false; }
             
             const oldDate=currentlyEditing.date;
             const key=currentlyEditing.key;
             
             try{
                 if(oldDate===newDate){
-                    await database.ref('memos/'+oldDate+'/'+key).update(memo);
+                    await database.ref(`users/${currentUserId}/memos/${oldDate}/${key}`).update(memo); // পরিবর্তিত
                 }else{
                     const updates={};
-                    updates['memos/'+oldDate+'/'+key]=null;
-                    updates['memos/'+newDate+'/'+key]=memo;
+                    updates[`users/${currentUserId}/memos/${oldDate}/${key}`]=null; // পরিবর্তিত
+                    updates[`users/${currentUserId}/memos/${newDate}/${key}`]=memo; // পরিবর্তিত
                     await database.ref().update(updates);
                 }
                 return true;
@@ -2055,7 +2251,14 @@
             }
         }
         
+        function viewMemosForDate(date) {
+            historyView = 'memos';
+            selectedHistoryDate = date;
+            displayHistory();
+        }
+
         function displayDateList(){
+            if (!currentUserId) return;
             const historyList=document.getElementById('history-list');
             const historyPageTitle=document.getElementById('history-page-title');
             
@@ -2063,7 +2266,7 @@
             
             historyPageTitle.innerText='দৈনিক হিসাবের তালিকা';
             
-            const memosRef=database.ref('memos').orderByKey();
+            const memosRef=database.ref(`users/${currentUserId}/memos`).orderByKey(); // পরিবর্তিত
             memosRef.on('value',(snapshot)=>{
                 historyList.innerHTML='';
                 
@@ -2099,21 +2302,22 @@
                     const formattedDate=new Date(date).toLocaleDateString('bn-BD',{year:'numeric',month:'long',day:'numeric'});
                     const listItem=document.createElement('li');
                     listItem.className='date-history-item';
+                    
                     listItem.innerHTML=`
-                        <div class="date-primary-info">
-                            <div class="date-header">🗓️ ${formattedDate}</div>
-                            <div class="memo-count">📝 ${memoCount.toLocaleString('bn-BD')} টি মেমো</div>
+                        <div onclick="viewMemosForDate('${date}')" style="flex-grow: 1; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+                            <div class="date-primary-info">
+                                <div class="date-header">🗓️ ${formattedDate}</div>
+                                <div class="memo-count">📝 ${memoCount.toLocaleString('bn-BD')} টি মেমো</div>
+                            </div>
+                            <div class="date-totals-info">
+                                <div class="total-item"><span>মোট অর্ডার:</span><strong>৳ ${dailyTotal.toLocaleString('bn-BD',numFormatOptions)}</strong></div>
+                                <div class="total-item advance"><span>মোট অগ্রিম:</span><strong>৳ ${dailyAdvance.toLocaleString('bn-BD',numFormatOptions)}</strong></div>
+                            </div>
                         </div>
-                        <div class="date-totals-info">
-                            <div class="total-item"><span>মোট অর্ডার:</span><strong>৳ ${dailyTotal.toLocaleString('bn-BD',numFormatOptions)}</strong></div>
-                            <div class="total-item advance"><span>মোট অগ্রিম:</span><strong>৳ ${dailyAdvance.toLocaleString('bn-BD',numFormatOptions)}</strong></div>
+                        <div class="date-actions" style="margin-left: 15px; flex-shrink: 0;">
+                            <button class="btn btn-add" style="padding: 8px 16px; font-size: 14px;" onclick="event.stopPropagation(); printAllMemosForDate('${date}')">All Print</button>
                         </div>
                     `;
-                    listItem.onclick=()=>{
-                        historyView='memos';
-                        selectedHistoryDate=date;
-                        displayHistory();
-                    };
                     historyList.appendChild(listItem);
                 });
             }, (error) => {
@@ -2123,6 +2327,7 @@
         }
         
         function displayMemosForDate(date){
+            if (!currentUserId) return;
             const historyList=document.getElementById('history-list');
             const historyPageTitle=document.getElementById('history-page-title');
             
@@ -2131,7 +2336,7 @@
             const formattedDate=new Date(date).toLocaleDateString('bn-BD',{year:'numeric',month:'long',day:'numeric'});
             historyPageTitle.innerHTML=`<a href="#" id="back-to-dates" style="text-decoration:none; color: var(--primary-blue); font-weight: 500; font-size:16px;">&#8592; তারিখে ফিরুন</a> <span style="color: #64748B;">|</span> ${formattedDate}`;
             
-            const memosRef=database.ref('memos/'+date).orderByChild('timestamp');
+            const memosRef=database.ref(`users/${currentUserId}/memos/${date}`).orderByChild('timestamp'); // পরিবর্তিত
             memosRef.on('value',(snapshot)=>{
                 historyList.innerHTML='';
                 
@@ -2161,15 +2366,12 @@
                     historyList.appendChild(listItem);
                 });
                 
-                const backButton = document.getElementById('back-to-dates');
-                if (backButton) {
-                    backButton.onclick=(e)=>{
-                        e.preventDefault();
-                        historyView='dates';
-                        selectedHistoryDate=null;
-                        displayHistory();
-                    };
-                }
+                document.getElementById('back-to-dates').onclick=(e)=>{
+                    e.preventDefault();
+                    historyView='dates';
+                    selectedHistoryDate=null;
+                    displayHistory();
+                };
             }, (error) => {
                 console.error("Error loading memos for date:", error);
                 historyList.innerHTML='<li class="memo-list-item">ডেটা লোড করতে সমস্যা হয়েছে।</li>';
@@ -2177,9 +2379,10 @@
         }
         
         async function deleteMemoFromHistory(key,date){
+            if (!currentUserId) return;
             if(confirm('আপনি কি নিশ্চিতভাবে এই মেমোটি মুছতে চান? এটি ফেরত আনা যাবে না।')){
                 try{
-                    await database.ref('memos/'+date+'/'+key).remove();
+                    await database.ref(`users/${currentUserId}/memos/${date}/${key}`).remove(); // পরিবর্তিত
                 }catch(error){
                     console.error("Firebase delete error: ",error);
                     alert('মেমোটি মোছা যায়নি।');
@@ -2188,13 +2391,11 @@
         }
         
         async function loadMemoFromHistory(key,date){
+            if (!currentUserId) return;
             try{
-                const snapshot=await database.ref('memos/'+date+'/'+key).once('value');
+                const snapshot=await database.ref(`users/${currentUserId}/memos/${date}/${key}`).once('value'); // পরিবর্তিত
                 const memo=snapshot.val();
-                if(!memo){
-                    alert('মেমোটি খুঁজে পাওয়া যায়নি।');
-                    return;
-                }
+                if(!memo){ alert('মেমোটি খুঁজে পাওয়া যায়নি।'); return; }
                 
                 document.getElementById('memo-no').value=memo.memoNo||'';
                 document.getElementById('customer-name').value=memo.customerName||'';
@@ -2214,9 +2415,7 @@
                     newRow.innerHTML=`<td></td><td><input type="text" class="product-name" value="${item.name||''}"></td><td><input type="number" class="quantity" value="${item.quantity||1}" min="1" oninput="calculateRow(this);"></td><td><input type="number" class="price" value="${item.price||0}" min="0" oninput="calculateRow(this);"></td><td><input type="text" class="amount" value="${item.amount||0}" readonly></td><td><button class="btn btn-remove" onclick="removeRow(this)">🗑️</button></td>`;
                 });
                 
-                if((memo.items||[]).length===0){
-                    addRow();
-                }
+                if((memo.items||[]).length===0){ addRow(); }
                 
                 updateSerialNumbers();
                 calculateTotals();
@@ -2231,7 +2430,6 @@
         
         function numberToWordsBengali(num){const single=['','এক','দুই','তিন','চার','পাঁচ','ছয়','সাত','আট','নয়'],teens=['দশ','এগারো','বারো','তেরো','চোদ্দ','পনেরো','ষোল','সতেরো','আঠারো','উনিশ'],tens=['','','বিশ','ত্রিশ','চল্লিশ','পঞ্চাশ','ষাট','সত্তর','আশি','নব্বই'],powers=['',' হাজার',' লক্ষ',' কোটি'];function convert(n){if(n<10)return single[n];if(n<20)return teens[n-10];if(n<100)return tens[Math.floor(n/10)]+(n%10!==0?' '+single[n%10]:'');if(n<1000)return single[Math.floor(n/100)]+' শত'+(n%100!==0?' '+convert(n%100):'');return convert(Math.floor(n/1000))+' হাজার'+(n%1000!==0?' '+convert(n%1000):'')}if(num===0)return'শূন্য';let words='',i=0;while(num>0){let chunk=(i===0)?num%1000:num%100;if(chunk>0){words=convert(chunk)+powers[i]+' '+words}num=(i===0)?Math.floor(num/1000):Math.floor(num/100);i++}return words.trim()}
         
-        // --- পরিবর্তিত প্রিন্ট জেনারেট ফাংশন ---
         function generatePrintContent(memoData) {
             const staticShopInfo = {
                 name: "আব্দুল্লাহ ইলেকট্রিক এন্ড ইলেকট্রনিক্স",
@@ -2251,10 +2449,7 @@
             let tableRows = '';
             items.forEach((item, index) => {
                 const pName = (item.name || '').replace(/\n/g, '<br>');
-                const qty = item.quantity || 1;
-                const price = (parseFloat(item.price || 0)).toFixed(2);
-                const amount = (parseFloat(item.amount || 0)).toFixed(2);
-                tableRows += `<tr><td style="text-align:center;">${index + 1}</td><td>${pName}</td><td style="text-align:center;">${qty}</td><td style="text-align:right;">${price}</td><td style="text-align:right;">${amount}</td></tr>`;
+                tableRows += `<tr><td style="text-align:center;">${index + 1}</td><td>${pName}</td><td style="text-align:center;">${item.quantity || 1}</td><td style="text-align:right;">${(parseFloat(item.price || 0)).toFixed(2)}</td><td style="text-align:right;">${(parseFloat(item.amount || 0)).toFixed(2)}</td></tr>`;
             });
 
             let selectedShopHtml = '';
@@ -2283,6 +2478,39 @@
                 <body><div class="memo-container"><div class="memo-header"><div class="header-shape-left"></div><div class="header-shape-right"></div><div class="shop-info"><img src="${staticShopInfo.logoUrl}" alt="Logo" class="shop-logo"><h1 class="shop-name">${staticShopInfo.name}</h1><p class="shop-details">${staticShopInfo.proprietor}</p><p class="shop-details">${staticShopInfo.details1}</p><p class="shop-details">${staticShopInfo.contact}</p></div></div><div class="customer-info-section"><div class="info-field"><span>নামঃ</span><p>${customerName}</p></div><div class="info-field"><span>মেমো নং:</span><p>${memoNo}</p></div><div class="info-field full-width"><span>ঠিকানাঃ</span><p>${customerAddress}</p></div><div class="info-field"><span>তারিখঃ</span><p>${formattedTransactionDate}</p></div><div class="info-field"><span>ডেলিভারি তারিখঃ</span><p>${formattedDeliveryDate}</p></div></div><div class="memo-body"><table class="products-table"><thead><tr><th style="width:5%;text-align:center;">নং</th><th style="width:50%;">বিবরণ</th><th style="width:10%;text-align:center;">পরিমাণ</th><th style="width:15%;text-align:right;">দর</th><th style="width:20%;text-align:right;">টাকা</th></tr></thead><tbody>${tableRows}</tbody></table> ${selectedShopHtml}</div><div class="memo-footer"><div class="notes"><p><b>কথায়ঃ</b> ${amountInWords} টাকা মাত্র।</p></div><div class="totals-section"><table class="totals-table"><tbody><tr><td class="label">মোট</td><td class="value">${parseFloat(grandTotal).toFixed(2)}</td></tr><tr><td class="label">অগ্রিম</td><td class="value">${parseFloat(advance).toFixed(2)}</td></tr><tr class="due"><td class="label"><strong>বাকি</strong></td><td class="value"><strong>${parseFloat(due).toFixed(2)}</strong></td></tr></tbody></table></div></div><div class="signature-section"><div class="signature-line">ক্রেতার স্বাক্ষর</div><div class="signature-line">বিক্রেতার স্বাক্ষর</div></div><div class="final-note">বিক্রিত মাল ফেরত নেয়া হয় না। ধন্যবাদ।</div><div class="final-note-bar"></div></div></body></html>`;
         }
 
+        async function printAllMemosForDate(date) {
+            if (!date || !currentUserId) return;
+            try {
+                const memosRef = database.ref(`users/${currentUserId}/memos/${date}`).orderByChild('timestamp'); // পরিবর্তিত
+                const snapshot = await memosRef.once('value');
+                if (!snapshot.exists()) {
+                    alert('এই তারিখে প্রিন্ট করার মতো কোনো মেমো নেই।'); return;
+                }
+                let allMemosHtml = '';
+                let memosToPrint = [];
+                snapshot.forEach(childSnapshot => {
+                    const memo = childSnapshot.val();
+                    if (!selectedShopId || memo.shopId === selectedShopId) {
+                        memosToPrint.push(memo);
+                    }
+                });
+                if (memosToPrint.length === 0) {
+                    alert('নির্বাচিত দোকানের জন্য এই তারিখে কোনো মেমো পাওয়া যায়নি।'); return;
+                }
+                memosToPrint.forEach((memo, index) => {
+                    allMemosHtml += generatePrintContent(memo);
+                    if (index < memosToPrint.length - 1) {
+                        allMemosHtml += '<div style="page-break-after: always;"></div>';
+                    }
+                });
+                if (allMemosHtml) {
+                    executePrint(allMemosHtml);
+                }
+            } catch (error) {
+                console.error("Error printing all memos for date:", error);
+                alert('দৈনিক সকল মেমো প্রিন্ট করতে সমস্যা হয়েছে।');
+            }
+        }
 
         function executePrint(htmlContent) {
             const iframe = document.createElement('iframe');
@@ -2297,7 +2525,6 @@
             }, 500);
         }
 
-        // --- পরিবর্তিত প্রিভিউ ফাংশন ---
         function showMemoPreview(memoData, backPage) {
             const memoContent = generatePrintContent(memoData);
             
@@ -2319,11 +2546,10 @@
             historyPage.style.display = 'none';
             shopPage.style.display = 'none';
             previewPage.style.display = 'block';
-            window.scrollTo(0, 0); // পেজের শুরুতে স্ক্রল করুন
+            window.scrollTo(0, 0);
 
             document.getElementById('preview-print-btn').onclick = () => {
-                const contentToPrint = document.getElementById('memo-content-for-print').innerHTML;
-                executePrint(contentToPrint);
+                executePrint(document.getElementById('memo-content-for-print').innerHTML);
             };
 
             document.getElementById('preview-back-btn').onclick = () => {
@@ -2337,11 +2563,12 @@
         }
         
         async function viewMemoFromHistory(key, date) {
+            if (!currentUserId) return;
             try {
-                const snapshot = await database.ref('memos/' + date + '/' + key).once('value');
+                const snapshot = await database.ref(`users/${currentUserId}/memos/${date}/${key}`).once('value'); // পরিবর্তিত
                 const memo = snapshot.val();
                 if (!memo) { alert('মেমোটি খুঁজে পাওয়া যায়নি।'); return; }
-                showMemoPreview(memo, 'history'); // ফিরে যাওয়ার জন্য 'history' পেজ সেট করা হলো
+                showMemoPreview(memo, 'history');
             } catch (error) {
                 console.error("Firebase view error: ", error);
                 alert('মেমোটি দেখানো যাচ্ছে না।');
@@ -2358,36 +2585,27 @@
 
             if(success){
                 const currentMemoData = collectMemoData();
-                showMemoPreview(currentMemoData, 'memo'); // ফিরে যাওয়ার জন্য 'memo' পেজ সেট করা হলো
+                showMemoPreview(currentMemoData, 'memo');
                 resetForm();
             }
         }
         
         function resetEditingState(){
             currentlyEditing=null;
-            const printSaveBtn = document.getElementById('print-save-btn');
-            if (printSaveBtn) printSaveBtn.innerText='সংরক্ষণ ও প্রিভিউ দেখুন 📄';
+            document.getElementById('print-save-btn').innerText='সংরক্ষণ ও প্রিভিউ দেখুন 📄';
         }
         
         function resetForm(){
-            const memoNo = document.getElementById('memo-no');
-            const customerName = document.getElementById('customer-name');
-            const customerAddress = document.getElementById('customer-address');
-            const transactionDate = document.getElementById('transaction-date');
-            const deliveryDate = document.getElementById('delivery-date');
-            const advance = document.getElementById('advance');
-            const tableBody = document.querySelector('#bill-table tbody');
-            
-            if (memoNo) memoNo.value='';
-            if (customerName) customerName.value='';
-            if (customerAddress) customerAddress.value='';
+            document.getElementById('memo-no').value='';
+            document.getElementById('customer-name').value='';
+            document.getElementById('customer-address').value='';
             
             const today=new Date().toISOString().split('T')[0];
-            if (transactionDate) transactionDate.value=today;
-            if (deliveryDate) deliveryDate.value=today;
+            document.getElementById('transaction-date').value=today;
+            document.getElementById('delivery-date').value=today;
             
-            if (advance) advance.value=0;
-            if (tableBody) tableBody.innerHTML='';
+            document.getElementById('advance').value=0;
+            document.querySelector('#bill-table tbody').innerHTML='';
             
             addRow();
             calculateTotals();
@@ -2396,95 +2614,53 @@
         }
 
         // --- Event Listeners ---
-        document.addEventListener('DOMContentLoaded',()=>{
-            initializeCustomDropdowns();
-            fetchShops();
-            initSlider();
-            resetForm(); 
-            showHomeDashboard();
-            
-            const today = new Date().toISOString().split('T')[0];
-            const transactionDate = document.getElementById('transaction-date');
-            const deliveryDate = document.getElementById('delivery-date');
-            
-            if (transactionDate) transactionDate.value = today;
-            if (deliveryDate) deliveryDate.value = today;
-            
-            addRow();
-        });
-
-        // Navigation Event Listeners
-        const sideHomeBtn=document.getElementById('side-home-btn'),
-              sideNewMemoBtn=document.getElementById('side-new-memo-btn'),
-              sideShowHistoryBtn=document.getElementById('side-show-history-btn'),
-              sideShopBtn=document.getElementById('side-shop-btn'),
-              sidePrivacyBtn=document.getElementById('side-privacy-btn'),
-              bottomNavHome=document.getElementById('bottom-nav-home'),
-              bottomNavMemo=document.getElementById('bottom-nav-memo'),
-              bottomNavHistory=document.getElementById('bottom-nav-history'),
-              bottomNavShop=document.getElementById('bottom-nav-shop');
-
-        if (sideHomeBtn) sideHomeBtn.onclick=()=>{ showHomeDashboard(); closeNav(); };
-        if (sideNewMemoBtn) sideNewMemoBtn.onclick=()=>{ resetForm(); showMemoPage(); closeNav(); };
-        if (sideShowHistoryBtn) sideShowHistoryBtn.onclick=()=>{ showHistoryPage(false); closeNav(); };
-        if (sideShopBtn) sideShopBtn.onclick=()=>{ showShopPage(); closeNav(); };
-        if (sidePrivacyBtn) sidePrivacyBtn.onclick=()=>{ document.getElementById('privacyModal').style.display='block'; closeNav(); };
+        document.getElementById('side-home-btn').onclick=()=>{ showHomeDashboard(); closeNav(); };
+        document.getElementById('side-new-memo-btn').onclick=()=>{ resetForm(); showMemoPage(); closeNav(); };
+        document.getElementById('side-show-history-btn').onclick=()=>{ showHistoryPage(false); closeNav(); };
+        document.getElementById('side-shop-btn').onclick=()=>{ showShopPage(); closeNav(); };
+        document.getElementById('side-privacy-btn').onclick=()=>{ document.getElementById('privacyModal').style.display='block'; closeNav(); };
+        document.getElementById('side-logout-btn').onclick = () => { handleSignOut(); closeNav(); }; // নতুন
         
-        if (bottomNavHome) bottomNavHome.onclick=(e)=>{ e.preventDefault(); showHomeDashboard(); };
-        if (bottomNavMemo) bottomNavMemo.onclick=(e)=>{ e.preventDefault(); resetForm(); showMemoPage(); };
-        if (bottomNavHistory) bottomNavHistory.onclick=(e)=>{ e.preventDefault(); showHistoryPage(true); };
-        if (bottomNavShop) bottomNavShop.onclick=(e)=>{ e.preventDefault(); showShopPage(); };
+        document.getElementById('bottom-nav-home').onclick=(e)=>{ e.preventDefault(); showHomeDashboard(); };
+        document.getElementById('bottom-nav-memo').onclick=(e)=>{ e.preventDefault(); resetForm(); showMemoPage(); };
+        document.getElementById('bottom-nav-history').onclick=(e)=>{ e.preventDefault(); showHistoryPage(true); };
+        document.getElementById('bottom-nav-shop').onclick=(e)=>{ e.preventDefault(); showShopPage(); };
         
-        if (fabAddMemo) fabAddMemo.onclick=()=>{ resetForm(); showMemoPage(); };
+        document.getElementById('fab-add-memo').onclick=()=>{ resetForm(); showMemoPage(); };
 
-        // Modal close buttons
-        const shopEditModalCloseBtn=document.getElementById('shop-edit-modal-close-btn'),
-              privacyModalCloseBtn=document.getElementById('privacy-modal-close-btn'),
-              saveShopInfoBtn=document.getElementById('save-shop-info-btn');
-
-        if (shopEditModalCloseBtn) shopEditModalCloseBtn.onclick=()=> document.getElementById('shopEditModal').style.display="none";
-        if (privacyModalCloseBtn) privacyModalCloseBtn.onclick=()=> document.getElementById('privacyModal').style.display="none";
+        document.getElementById('shop-edit-modal-close-btn').onclick=()=> document.getElementById('shopEditModal').style.display="none";
+        document.getElementById('privacy-modal-close-btn').onclick=()=> document.getElementById('privacyModal').style.display="none";
         
-        if (saveShopInfoBtn) {
-            saveShopInfoBtn.onclick=()=>{
-                const newShopInfo={
-                    name: document.getElementById('shop-name-input').value,
-                    proprietor: document.getElementById('proprietor-name-input').value,
-                    details1: document.getElementById('shop-details1-input').value,
-                    contact: document.getElementById('shop-contact-input').value,
-                    logoUrl: document.getElementById('shop-logo-input').value
-                };
-                
-                const shopId = document.getElementById('save-shop-info-btn').getAttribute('data-shop-id');
-                
-                if (shopId) {
-                    database.ref('shops/' + shopId).update(newShopInfo)
-                        .then(() => {
-                            alert('দোকানের তথ্য সফলভাবে আপডেট করা হয়েছে!');
-                            document.getElementById('shopEditModal').style.display = 'none';
-                            loadShopList();
-                        })
-                        .catch(error => {
-                            console.error("Error updating shop:", error);
-                            alert('তথ্য আপডেট করা যায়নি। ত্রুটি: ' + error);
-                        });
-                } else {
-                    const newShopRef = database.ref('shops').push();
-                    newShopRef.set(newShopInfo)
-                        .then(() => {
-                            alert('নতুন দোকান সফলভাবে তৈরি করা হয়েছে!');
-                            selectedShopId = newShopRef.key;
-                            document.getElementById('shopEditModal').style.display = 'none';
-                            updateCustomDropdowns();
-                            loadShopList();
-                        })
-                        .catch(error => {
-                            console.error("Error creating shop:", error);
-                            alert('দোকান তৈরি করা যায়নি। ত্রুটি: ' + error);
-                        });
-                }
+        document.getElementById('save-shop-info-btn').onclick=()=>{
+            if (!currentUserId) return;
+            const newShopInfo={
+                name: document.getElementById('shop-name-input').value,
+                proprietor: document.getElementById('proprietor-name-input').value,
+                details1: document.getElementById('shop-details1-input').value,
+                contact: document.getElementById('shop-contact-input').value,
+                logoUrl: document.getElementById('shop-logo-input').value
             };
-        }
+            
+            const shopId = document.getElementById('save-shop-info-btn').getAttribute('data-shop-id');
+            const dbRef = database.ref(`users/${currentUserId}/shops`); // পরিবর্তিত
+            
+            if (shopId) {
+                dbRef.child(shopId).update(newShopInfo).then(() => {
+                    alert('দোকানের তথ্য সফলভাবে আপডেট করা হয়েছে!');
+                    document.getElementById('shopEditModal').style.display = 'none';
+                    loadShopList();
+                }).catch(error => alert('তথ্য আপডেট করা যায়নি। ত্রুটি: ' + error));
+            } else {
+                const newShopRef = dbRef.push();
+                newShopRef.set(newShopInfo).then(() => {
+                    alert('নতুন দোকান সফলভাবে তৈরি করা হয়েছে!');
+                    selectedShopId = newShopRef.key;
+                    document.getElementById('shopEditModal').style.display = 'none';
+                    updateCustomDropdowns();
+                    loadShopList();
+                }).catch(error => alert('দোকান তৈরি করা যায়নি। ত্রুটি: ' + error));
+            }
+        };
 
         window.onclick=(event)=>{
             if(event.target==document.getElementById('shopEditModal')) document.getElementById('shopEditModal').style.display="none";
