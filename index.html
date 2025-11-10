@@ -11,9 +11,6 @@
     <!-- Firebase SDK Scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    
-    <!-- **** ADDED: html2canvas library for image printing **** -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
         :root {
@@ -22,135 +19,1206 @@
             --text-dark: #1E293B; --text-light: #64748B;
             --border-color: #E2E8F0;
             --danger-red: #EF4444; --danger-red-dark: #B91C1C;
+            --success-green: #10B981;
+        }
+        * {
+            box-sizing: border-box;
         }
         body {
-            font-family: 'Poppins', sans-serif; margin: 0; padding: 20px;
-            background-color: var(--light-blue-bg); color: var(--text-dark);
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light-blue-bg);
+            color: var(--text-dark);
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            padding-top: 80px; /* ন্যাভিগেশন বারের জন্য স্পেস */
+            padding-bottom: 80px;
         }
+
+        /* ন্যাভিগেশন বার স্টাইল */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(to right, var(--primary-blue), var(--primary-blue-dark));
+            color: white;
+            z-index: 1001;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .navbar.hidden {
+            transform: translateY(-100%);
+        }
+        .nav-container {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            padding: 0 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .nav-logo {
+            height: 40px;
+            margin-right: 15px;
+            border-radius: 6px;
+        }
+        .nav-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+            flex-grow: 1;
+        }
+
+        /* মেনু বাটন স্টাইল */
+        .menu-btn {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+            margin-right: 15px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+        .menu-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
         .container {
-            max-width: 900px; margin: auto; padding: 30px;
-            background: var(--white-color); border-radius: 24px;
+            max-width: 900px;
+            margin: auto;
+            padding: 20px;
+            background: var(--white-color);
+            border-radius: 24px;
             box-shadow: 0 10px 30px rgba(65, 87, 128, 0.1);
+            margin-top: 20px;
         }
-        .header-bar { display: flex; align-items: center; margin-bottom: 20px; }
-        .header-logo { height: 50px; margin-right: 15px; border-radius: 8px; }
-        .menu-btn { font-size: 30px; cursor: pointer; padding: 0 15px; color: var(--text-dark); }
-        h1 { text-align: center; margin: 0; color: var(--text-dark); font-weight: 700; flex-grow: 1; font-size: 24px; }
-
-        .sidenav{height:100%;width:0;position:fixed;z-index:1000;top:0;left:0;background-color:var(--white-color);overflow-x:hidden;transition:0.5s;padding-top:60px;box-shadow:3px 0 15px rgba(0,0,0,0.1)}.sidenav a{padding:12px 15px 12px 32px;text-decoration:none;font-size:18px;color:var(--text-dark);display:block;transition:0.3s}.sidenav a:hover{background-color:var(--light-blue-bg);color:var(--primary-blue)}.sidenav .close-btn{position:absolute;top:15px;right:25px;font-size:36px}
-
-        /* Input Styles */
-        .customer-info{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:20px}
-        input[type="text"], input[type="number"], input[type="date"] {
-            width: 100%; padding: 12px 16px; box-sizing: border-box; background: #F8FAFC;
-            border: 1px solid var(--border-color); border-radius: 12px; font-size: 16px;
-            font-family: 'Poppins', sans-serif; transition: all .3s ease;
+        .header-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
         }
-       
-        input:focus {
-            outline: none; border-color: var(--primary-blue);
+        .header-logo {
+            height: 50px;
+            margin-right: 15px;
+            border-radius: 8px;
+        }
+        .header-bar .menu-btn {
+            display: none !important;
+        }
+        h1 {
+            text-align: center;
+            margin: 0;
+            color: var(--text-dark);
+            font-weight: 700;
+            flex-grow: 1;
+            font-size: 24px;
+        }
+
+        .sidenav {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 1002; /* z-index বাড়ানো হয়েছে */
+            top: 0;
+            left: 0;
+            background-color: var(--white-color);
+            overflow-x: hidden;
+            transition: 0.5s;
+            box-shadow: 3px 0 15px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        .sidenav .sidenav-header {
+            padding: 20px 25px;
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--white-color);
+            background-image: linear-gradient(to right, var(--primary-blue), var(--primary-blue-dark));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .sidenav a {
+            padding: 15px 15px 15px 32px;
+            text-decoration: none;
+            font-size: 17px;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: 0.3s;
+            border-left: 4px solid transparent;
+        }
+        .sidenav a:hover {
+            background-color: var(--light-blue-bg);
+            color: var(--primary-blue);
+            border-left-color: var(--primary-blue);
+        }
+        .sidenav .close-btn {
+            position: static;
+            font-size: 32px;
+            color: var(--white-color);
+            text-decoration: none;
+            border-left: none;
+            padding: 0;
+            line-height: 1;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.3s;
+        }
+        .sidenav .close-btn:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-left-color: transparent;
+            color: var(--white-color);
+        }
+        .sidenav-divider {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 10px 25px;
+        }
+        .sidenav-footer {
+            margin-top: auto;
+            padding: 20px 32px;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        #main-content, #history-page, #shop-page, #home-page, .bottom-nav, .fab-add {
+            transition: filter 0.5s ease-out;
+        }
+        .content-blur {
+            filter: blur(5px);
+            pointer-events: none;
+            user-select: none;
+        }
+
+        /* হোম পেজ স্টাইলস */
+        #home-page {
+            display: block;
+            margin-top: -20px; /* স্লাইডারকে একটু উপরে তুলতে */
+        }
+        .home-container {
+            max-width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 16:9 রেশিও স্লাইডার - একদম উপরে */
+        .slider-section {
+            margin: 0;
+            width: 100%;
+        }
+        .slider-container {
+            position: relative;
+            width: 100%;
+            border-radius: 0;
+            overflow: hidden;
+            background: var(--white-color);
+        }
+        .slider {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9; /* 16:9 রেশিও */
+            overflow: hidden;
+        }
+        .slides {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            height: 100%;
+        }
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        .slide-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .slide-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            padding: 20px;
+        }
+        .slide-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .slide-desc {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        .slider-nav {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .nav-dot.active {
+            background: white;
+            transform: scale(1.3);
+        }
+        .slider-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            color: var(--text-dark);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .slider-arrow:hover {
+            background: white;
+            transform: translateY(-50%) scale(1.1);
+        }
+        .slider-arrow.prev {
+            left: 20px;
+        }
+        .slider-arrow.next {
+            right: 20px;
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin: 20px;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
+            border-radius: 20px;
+            color: white;
+        }
+        .welcome-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .welcome-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: var(--white-color);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid var(--border-color);
+        }
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px;
+        }
+        .action-card {
+            background: var(--white-color);
+            padding: 25px 15px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-color: var(--primary-blue);
+        }
+        .action-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .action-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+        .action-desc {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        /* বাকি স্টাইলস */
+        .customer-info{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:15px;
+            margin-bottom:20px
+        }
+        input[type="text"], input[type="number"], input[type="date"], select {
+            width: 100%;
+            padding: 12px 16px;
+            box-sizing: border-box;
+            background: #F8FAFC;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            transition: all .3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
             box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
         }
-        .date-field label { font-weight: 500; color: var(--text-dark); margin-bottom: 8px; display: block; font-size: 14px; }
-        .full-width { grid-column: 1 / -1; }
-        
-        td input { min-width: 50px; }
-        input.product-name { width: 100%; min-width: 15ch; }
-        .quantity { width: 100%; min-width: 7ch; text-align: center; }
-        .price { width: 100%; min-width: 8ch; text-align: right; }
-        .amount { width: 100%; min-width: 9ch; text-align: right; }
-
-        .table-wrapper{overflow-x:auto; -webkit-overflow-scrolling: touch;}
-        table{width:100%; border-collapse:collapse; margin-bottom:20px;}
-        th,td{padding:14px 10px; text-align:center; border-bottom:1px solid var(--border-color); vertical-align:middle; white-space: nowrap;}
-        th{background-color:var(--primary-blue);color:white;font-weight:600;font-size:15px;padding:16px 12px;letter-spacing:.5px;text-transform:uppercase;border-right:1px solid rgba(255,255,255,.15)}
-        th:nth-child(2), td:nth-child(2){ text-align:left; white-space: normal; word-break: break-word; }
-        
-        th:first-child{border-radius:10px 0 0 10px}
-        th:last-child{border-radius:0 10px 10px 0;border-right:none}
-        tr:last-child td{border-bottom:none}
-
-        .btn{padding:12px 24px;border:none;border-radius:12px;cursor:pointer;font-size:16px;font-family:'Poppins',sans-serif;transition:all .3s ease;font-weight:600;color:white;background-size:200% auto;box-shadow:0 4px 15px rgba(0,0,0,.1)}.btn:hover{background-position:right center;transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.15)}.btn-add{background-image:linear-gradient(to right,var(--primary-blue) 0%,var(--primary-blue-dark) 51%,var(--primary-blue) 100%)}.btn-remove{background:#F1F5F9;color:var(--text-light);box-shadow:none; padding: 8px 12px; font-size: 14px;}.btn-remove:hover{background:#E2E8F0;color:var(--text-dark);transform:none;box-shadow:none}
-        .btn-delete { background-image: linear-gradient(to right, var(--danger-red) 0%, var(--danger-red-dark) 51%, var(--danger-red) 100%); }
-        .btn-print{background-image:linear-gradient(to right,var(--primary-blue) 0%,var(--primary-blue-dark) 51%,var(--primary-blue) 100%);display:block;width:100%;margin-top:20px;padding:16px;font-size:18px;font-weight:700}
-        .totals-container{float:right;width:300px;background:var(--light-blue-bg);padding:20px;border-radius:16px;margin-top:15px}.totals-table{width:100%;border:none}.totals-table td{border:none;padding:10px;font-size:16px;text-align:left}.text-right{text-align:right!important;font-weight:700}.clearfix::after{content:"";clear:both;display:table}
-        .modal{display:none;position:fixed;z-index:2000;left:0;top:0;width:100%;height:100%;overflow:auto;background-color:rgba(0,0,0,.5)}.modal-content{background-color:#fefefe;margin:10% auto;padding:25px;border:1px solid #888;width:90%;max-width:700px;border-radius:15px}.modal-header{display:flex;justify-content:space-between;align-items:center}.modal-header h2{margin:0; font-size: 20px;}.modal-close-btn{color:#aaa;font-size:28px;font-weight:bold;cursor:pointer}#history-list{list-style:none;padding:0;margin-top:20px}#history-list li{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border-color); flex-wrap: wrap; gap: 10px;}#history-list li:last-child{border-bottom:none}#history-list .controls button{padding:6px 12px;font-size:14px; margin-left: 5px;}
-        
-        @media (max-width:768px){
-            body{padding:10px; font-size: 14px;}
-            .container{padding:15px}
-            .customer-info{grid-template-columns:1fr}
-            .totals-container{float:none;width:auto;margin-top:25px;padding:15px}
-            h1{font-size:18px}
-            .menu-btn{font-size:24px;padding:0 10px}
-            .header-logo{height:40px}
-            th, td { padding: 10px 8px; font-size: 13px; }
-            .btn { padding: 10px 18px; font-size: 15px; }
-            .btn-print { padding: 14px; font-size: 16px; }
-            #history-list li { flex-direction: column; align-items: flex-start; }
-            #history-list .controls { margin-top: 10px; }
+        .date-field label {
+            font-weight: 500;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            display: block;
+            font-size: 14px;
         }
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        td input {
+            min-width: 50px;
+        }
+        input.product-name {
+            width: 100%;
+            min-width: 15ch;
+        }
+        .quantity {
+            width: 100%;
+            min-width: 7ch;
+            text-align: center;
+        }
+        .price {
+            width: 100%;
+            min-width: 8ch;
+            text-align: right;
+        }
+        .amount {
+            width: 100%;
+            min-width: 9ch;
+            text-align: right;
+        }
+
+        .table-wrapper{
+            overflow-x:auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        table{
+            width:100%;
+            border-collapse:collapse;
+            margin-bottom:20px;
+        }
+        th,td{
+            padding:14px 10px;
+            text-align:center;
+            border-bottom:1px solid var(--border-color);
+            vertical-align:middle;
+            white-space: nowrap;
+        }
+        th{
+            background-color:var(--primary-blue);
+            color:white;
+            font-weight:600;
+            font-size:15px;
+            padding:16px 12px;
+            letter-spacing:.5px;
+            text-transform:uppercase;
+            border-right:1px solid rgba(255,255,255,.15)
+        }
+        th:nth-child(2), td:nth-child(2){
+            text-align:left;
+            white-space: normal;
+            word-break: break-word;
+        }
+
+        th:first-child{
+            border-radius:10px 0 0 10px
+        }
+        th:last-child{
+            border-radius:0 10px 10px 0;
+            border-right:none
+        }
+        tr:last-child td{
+            border-bottom:none
+        }
+
+        .btn{
+            padding:12px 24px;
+            border:none;
+            border-radius:12px;
+            cursor:pointer;
+            font-size:16px;
+            font-family:'Poppins',sans-serif;
+            transition:all .3s ease;
+            font-weight:600;
+            color:white;
+            background-size:200% auto;
+            box-shadow:0 4px 15px rgba(0,0,0,.1)
+        }
+        .btn:hover{
+            background-position:right center;
+            transform:translateY(-2px);
+            box-shadow:0 6px 20px rgba(0,0,0,.15)
+        }
+        .btn-add{
+            background-image:linear-gradient(to right,var(--primary-blue) 0%,var(--primary-blue-dark) 51%,var(--primary-blue) 100%)
+        }
+        .btn-remove{
+            background:#F1F5F9;
+            color:var(--text-light);
+            box-shadow:none;
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+        .btn-remove:hover{
+            background:#E2E8F0;
+            color:var(--text-dark);
+            transform:none;
+            box-shadow:none
+        }
+        .btn-delete {
+            background-image: linear-gradient(to right, var(--danger-red) 0%, var(--danger-red-dark) 51%, var(--danger-red) 100%);
+        }
+        .btn-print{
+            background-image:linear-gradient(to right,var(--primary-blue) 0%,var(--primary-blue-dark) 51%,var(--primary-blue) 100%);
+            display:block;
+            width:100%;
+            margin-top:20px;
+            padding:16px;
+            font-size:18px;
+            font-weight:700
+        }
+        .totals-container{
+            float:right;
+            width:300px;
+            background:var(--light-blue-bg);
+            padding:20px;
+            border-radius:16px;
+            margin-top:15px
+        }
+        .totals-table{
+            width:100%;
+            border:none
+        }
+        .totals-table td{
+            border:none;
+            padding:10px;
+            font-size:16px;
+            text-align:left
+        }
+        .text-right{
+            text-align:right!important;
+            font-weight:700
+        }
+        .clearfix::after{
+            content:"";
+            clear:both;
+            display:table
+        }
+        .modal{
+            display:none;
+            position:fixed;
+            z-index:2000;
+            left:0;
+            top:0;
+            width:100%;
+            height:100%;
+            overflow:auto;
+            background-color:rgba(0,0,0,.5)
+        }
+        .modal-content{
+            background-color:#fefefe;
+            margin:5% auto;
+            padding:25px;
+            border:1px solid #888;
+            width:90%;
+            max-width:850px; /* প্রস্থ বাড়ানো হয়েছে */
+            border-radius:15px
+        }
+        .modal-header{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+        .modal-header h2{
+            margin:0;
+            font-size: 20px;
+        }
+        .modal-close-btn{
+            color:#aaa;
+            font-size:28px;
+            font-weight:bold;
+            cursor:pointer
+        }
+        #history-list{
+            list-style:none;
+            padding:0;
+            margin-top:20px
+        }
+
+        .date-history-item {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        .date-history-item:hover {
+            border-color: var(--primary-blue);
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.1);
+            transform: translateY(-2px);
+        }
+        .date-primary-info .date-header {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+        .date-primary-info .memo-count {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+        .date-totals-info {
+            text-align: right;
+        }
+        .date-totals-info .total-item {
+            font-size: 15px;
+            margin-bottom: 5px;
+        }
+        .date-totals-info .total-item:last-child {
+            margin-bottom: 0;
+        }
+        .date-totals-info .total-item span {
+            color: var(--text-light);
+            margin-right: 10px;
+        }
+        .date-totals-info .total-item strong {
+            font-weight: 600;
+            color: var(--primary-blue-dark);
+        }
+        .date-totals-info .total-item.advance strong {
+            color: var(--success-green);
+        }
+
+        #history-list .memo-list-item {
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:12px 0;
+            border-bottom:1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        #history-list .memo-list-item:last-child {
+            border-bottom: none;
+        }
+        .memo-list-item .controls button {
+            padding:6px 12px;
+            font-size:14px;
+            margin-left: 5px;
+        }
+
+        .modal-body {
+            line-height: 1.8;
+            color: var(--text-light);
+        }
+        .modal-body h3 {
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+        .modal-body p {
+            margin-bottom: 15px;
+        }
+
+        .empty-state-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 20px;
+            text-align: center;
+        }
+        .empty-state-icon {
+            width: 100px;
+            height: 100px;
+            background-color: #f1f5f9;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+        .empty-state-icon svg {
+            width: 50px;
+            height: 50px;
+            stroke: #94a3b8;
+        }
+        .empty-state-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 0 0 10px 0;
+        }
+        .empty-state-subtitle {
+            font-size: 16px;
+            color: var(--text-light);
+            margin: 0;
+            max-width: 300px;
+        }
+
+        .fab-add {
+            position: fixed;
+            bottom: 85px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            background-image: linear-gradient(to right, var(--primary-blue) 0%, var(--primary-blue-dark) 51%, var(--primary-blue) 100%);
+            background-size: 200% auto;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 30px;
+            line-height: 60px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        .fab-add:hover {
+            background-position: right center;
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+        }
+
+        .shop-edit-form label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        .shop-edit-form input {
+            margin-bottom: 10px;
+        }
+
+        /* লোগো সহ ড্রপডাউন স্টাইলস */
+        .shop-dropdown {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .custom-dropdown {
+            position: relative;
+            width: 100%;
+        }
+        .custom-dropdown-select {
+            width: 100%;
+            padding: 12px 16px;
+            background: #F8FAFC;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+        .custom-dropdown-select:hover {
+            border-color: var(--primary-blue);
+        }
+        .custom-dropdown-select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+        }
+        .custom-dropdown-options {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-top: 5px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            z-index: 1000;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+        .custom-dropdown-option {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .custom-dropdown-option:last-child {
+            border-bottom: none;
+        }
+        .custom-dropdown-option:hover {
+            background: var(--light-blue-bg);
+        }
+        .custom-dropdown-option.selected {
+            background: var(--primary-blue);
+            color: white;
+        }
+        .custom-dropdown-option-logo {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        .custom-dropdown-option-text {
+            flex-grow: 1;
+        }
+        .custom-dropdown-option-name {
+            font-weight: 500;
+            font-size: 14px;
+        }
+        .custom-dropdown-option-contact {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 2px;
+        }
+        .custom-dropdown.selected .custom-dropdown-options {
+            display: block;
+        }
+        .custom-dropdown-chevron {
+            transition: transform 0.3s ease;
+        }
+        .custom-dropdown.selected .custom-dropdown-chevron {
+            transform: rotate(180deg);
+        }
+
+        /* শপ ম্যানেজমেন্ট স্টাইলস */
+        .shop-management-section {
+            margin-top: 30px;
+        }
+        .shop-management-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .shop-management-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        .shop-list {
+            display: grid;
+            gap: 15px;
+        }
+        .shop-item {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+        .shop-item:hover {
+            border-color: var(--primary-blue);
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.1);
+        }
+        .shop-item-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+        .shop-item-info {
+            flex-grow: 1;
+        }
+        .shop-item-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0 0 5px 0;
+            color: var(--text-dark);
+        }
+        .shop-item-details {
+            font-size: 14px;
+            color: var(--text-light);
+            margin: 0;
+        }
+        .shop-item-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .shop-item-action-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .shop-item-edit {
+            background: var(--primary-blue);
+            color: white;
+        }
+        .shop-item-delete {
+            background: var(--danger-red);
+            color: white;
+        }
+        .shop-item-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 65px;
+            background-color: var(--white-color);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+            z-index: 999;
+            transition: transform 0.3s ease; /* নতুন পরিবর্তন */
+        }
+        /* নতুন পরিবর্তন */
+        .bottom-nav.hidden {
+            transform: translateY(100%);
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            gap: 4px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: color 0.3s, background-color 0.3s;
+        }
+        .nav-item svg {
+            width: 24px;
+            height: 24px;
+        }
+        .nav-item:hover {
+            color: var(--primary-blue);
+        }
+        .nav-item.active {
+            color: var(--primary-blue-dark);
+            font-weight: 600;
+        }
+        
     </style>
 </head>
 <body>
-
-    <div id="mySidenav" class="sidenav">
-        <a href="javascript:void(0)" class="close-btn" onclick="closeNav()">&times;</a>
-        <a href="#" id="new-memo-btn">➕ নতুন মেমো</a>
-        <a href="#" id="show-history-btn">📜 মেমোর ইতিহাস</a>
-    </div>
-
-    <div class="container">
-        <div class="header-bar">
+    <!-- ন্যাভিগেশন বার -->
+    <div class="navbar" id="navbar">
+        <div class="nav-container">
             <span class="menu-btn" onclick="openNav()">&#9776;</span>
-            <img src="https://i.ibb.co.com/B9LFnxY/20251109-143256.png" alt="Abdullah Electric Logo" class="header-logo">
-            <h1>বিল ম্যানেজমেন্ট সিস্টেম</h1>
+            <img src="https://i.ibb.co/fYwdd8h/IMG-20251107-WA0006.jpg" alt="Shop Logo" class="nav-logo">
+            <h1 class="nav-title">আব্দুল্লাহ ইলেকট্রিক</h1>
         </div>
+    </div>
+    
+    <div id="mySidenav" class="sidenav">
+        <div class="sidenav-header">
+            <span>মেনু</span>
+            <a href="javascript:void(0)" class="close-btn" onclick="closeNav()">&times;</a>
+        </div>
+        <a href="#" id="side-home-btn">🏠 <span>হোম</span></a>
+        <a href="#" id="side-new-memo-btn">➕ <span>নতুন মেমো</span></a>
+        <a href="#" id="side-show-history-btn">📜 <span>মেমোর ইতিহাস</span></a>
+        
+        <hr class="sidenav-divider">
+        <a href="#" id="side-shop-btn">🏪 <span>আমাদের দোকান</span></a>
+        <a href="#" id="side-privacy-btn">🔒 <span>গোপনীয়তা নীতি</span></a>
 
-        <div class="customer-info">
-            <input type="text" id="memo-no" placeholder="মেমো নং">
-            <input type="text" id="customer-name" placeholder="ক্রেতার নাম">
-            <input type="text" id="customer-address" placeholder="ক্রেতার ঠিকানা" class="full-width">
-            <div class="date-field">
-                <label for="transaction-date">তারিখ</label>
-                <input type="date" id="transaction-date" title="লেনদেনের তারিখ">
-            </div>
-            <div class="date-field">
-                <label for="delivery-date">ডেলিভারি তারিখ</label>
-                <input type="date" id="delivery-date" title="ডেলিভারি তারিখ">
-            </div>
+        <div class="sidenav-footer">
+            সংস্করণ ১.১২
         </div>
-
-        <div class="table-wrapper">
-            <table id="bill-table">
-                <thead>
-                    <tr>
-                        <th>নং</th><th>বিবরণ</th><th>পরিমাণ</th><th>দর</th><th>টাকা</th><th>মুছুন</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
-        <button class="btn btn-add" onclick="addRow()">+ নতুন পণ্য যোগ করুন</button>
-        <div class="totals-container">
-            <table class="totals-table">
-                <tbody>
-                    <tr><td>মোট</td><td class="text-right" id="grand-total">0.00</td></tr>
-                    <tr><td>অগ্রিম</td><td><input type="number" id="advance" value="0" min="0" oninput="calculateTotals()" style="text-align:right; width: 120px; padding: 8px;"></td></tr>
-                    <tr><td><strong>বাকি</strong></td><td class="text-right" id="due"><strong>0.00</strong></td></tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="clearfix"></div>
-        <button class="btn btn-print" id="print-save-btn" onclick="saveAndShowPreview()">সংরক্ষণ ও প্রিভিউ দেখুন 📄</button>
     </div>
 
-    <!-- History Modal -->
-    <div id="historyModal" class="modal"><div class="modal-content"><div class="modal-header"><h2>সংরক্ষিত মেমোর তালিকা</h2><span class="modal-close-btn">&times;</span></div><ul id="history-list"></ul></div></div>
+    <!-- হোম পেজ -->
+    <div id="home-page">
+        <div class="home-container">
+            <!-- 16:9 রেশিও স্লাইডার - একদম উপরে -->
+            <div class="slider-section">
+                <div class="slider-container">
+                    <div class="slider">
+                        <div class="slides" id="slides">
+                            <div class="slide">
+                                <img src="https://images.unsplash.com/photo-1563013541-314ef36ad4fc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZWxlY3RyaWNhbCUyMGFwcGxpYW5jZXN8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=1200&q=80" alt="ইলেকট্রিক আইটেম" class="slide-image">
+                                <div class="slide-content">
+                                    <div class="slide-title">ইলেকট্রনিক আইটেম</div>
+                                    <div class="slide-desc">সকল প্রকার ইলেকট্রনিক সামগ্রী</div>
+                                </div>
+                            </div>
+                            <div class="slide">
+                                <img src="https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8ZWxlY3RyaWNhbCUyMGRldmljZXN8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=1200&q=80" alt="ইলেকট্রিক ডিভাইস" class="slide-image">
+                                <div class="slide-content">
+                                    <div class="slide-title">ইলেকট্রিক ডিভাইস</div>
+                                    <div class="slide-desc">আধুনিক ইলেকট্রিক যন্ত্রপাতি</div>
+                                </div>
+                            </div>
+                            <div class="slide">
+                                <img src="https://images.unsplash.com/photo-1581093458791-8a0a1ed12789?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGVsZWN0cmljYWwlMjBkZXZpY2VzfGVufDB8fDB8fHww&auto=format&fit=crop&w=1200&q=80" alt="সার্ভিস" class="slide-image">
+                                <div class="slide-content">
+                                    <div class="slide-title">পেশাদার সার্ভিস</div>
+                                    <div class="slide-desc">বিশেষজ্ঞ টেকনিশিয়ান দ্বারা সার্ভিস</div>
+                                </div>
+                            </div>
+                            <div class="slide">
+                                <img src="https://images.unsplash.com/photo-1558618666-fcd25856cd25?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGVsZWN0cmljYWwlMjBkZXZpY2VzfGVufDB8fDB8fHww&auto=format&fit=crop&w=1200&q=80" alt="সাপোর্ট" class="slide-image">
+                                <div class="slide-content">
+                                    <div class="slide-title">২৪/৭ সাপোর্ট</div>
+                                    <div class="slide-desc">যেকোনো সমস্যায় আমরা আছি আপনার পাশে</div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="slider-arrow prev" onclick="prevSlide()">❮</button>
+                        <button class="slider-arrow next" onclick="nextSlide()">❯</button>
+                        <div class="slider-nav" id="slider-nav">
+                            <!-- নেভিগেশন ডটস ডাইনামিকভাবে যোগ হবে -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="welcome-section">
+                <h1 class="welcome-title">আব্দুল্লাহ ইলেকট্রিক</h1>
+                <p class="welcome-subtitle">আপনার ব্যবসায়িক হিসাব ব্যবস্থাপনা সহজ করুন</p>
+                <div class="quick-stats" id="home-stats">
+                    <!-- স্ট্যাটিস্টিক্স ডাইনামিকভাবে লোড হবে -->
+                </div>
+            </div>
+
+            <div class="quick-actions">
+                <div class="action-card" onclick="showMemoPage()">
+                    <span class="action-icon">📊</span>
+                    <div class="action-title">নতুন মেমো</div>
+                    <div class="action-desc">দ্রুত বিল তৈরি করুন</div>
+                </div>
+                <div class="action-card" onclick="showHistoryPage()">
+                    <span class="action-icon">📜</span>
+                    <div class="action-title">মেমো ইতিহাস</div>
+                    <div class="action-desc">পূর্বের সকল বিল দেখুন</div>
+                </div>
+                <div class="action-card" onclick="showShopPage()">
+                    <span class="action-icon">🏪</span>
+                    <div class="action-title">দোকান ব্যবস্থাপনা</div>
+                    <div class="action-desc">দোকান যোগ ও সম্পাদনা</div>
+                </div>
+                <div class="action-card" onclick="resetForm(); showMemoPage();">
+                    <span class="action-icon">⚡</span>
+                    <div class="action-title">দ্রুত শুরু</div>
+                    <div class="action-desc">নতুন বিল তৈরি করুন</div>
+                </div>
+            </div>
+        </div>
+    </div>
     
-    <!-- **** MODIFIED: View Memo Modal **** -->
+    <div id="main-content" style="display: none;">
+        <div class="container">
+            <div class="header-bar">
+                <img src="https://i.ibb.co/fYwdd8h/IMG-20251107-WA0006.jpg" alt="Shop Logo" class="header-logo" id="main-header-logo">
+                <h1 id="main-header-title">বিল ম্যানেজমেন্ট সিস্টেম</h1>
+            </div>
+
+            <!-- লোগো সহ কাস্টম ড্রপডাউন -->
+            <div class="shop-dropdown">
+                <div class="custom-dropdown" id="shop-custom-dropdown">
+                    <div class="custom-dropdown-select" id="shop-dropdown-select">
+                        <div class="custom-dropdown-selected">
+                            <span id="selected-shop-text">দোকান নির্বাচন করুন...</span>
+                        </div>
+                        <svg class="custom-dropdown-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="custom-dropdown-options" id="shop-dropdown-options">
+                        <!-- Options will be populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="customer-info">
+                <input type="text" id="memo-no" placeholder="মেমো নং">
+                <input type="text" id="customer-name" placeholder="ক্রেতার নাম">
+                <input type="text" id="customer-address" placeholder="ক্রেতার ঠিকানা" class="full-width">
+                <div class="date-field">
+                    <label for="transaction-date">তারিখ</label>
+                    <input type="date" id="transaction-date" title="লেনদেনের তারিখ">
+                </div>
+                <div class="date-field">
+                    <label for="delivery-date">ডেলিভারি তারিখ</label>
+                    <input type="date" id="delivery-date" title="ডেলিভারি তারিখ">
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table id="bill-table">
+                    <thead>
+                        <tr>
+                            <th>নং</th><th>বিবরণ</th><th>পরিমাণ</th><th>দর</th><th>টাকা</th><th>মুছুন</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <button class="btn btn-add" onclick="addRow()">+ নতুন পণ্য যোগ করুন</button>
+            <div class="totals-container">
+                <table class="totals-table">
+                    <tbody>
+                        <tr><td>মোট</td><td class="text-right" id="grand-total">0.00</td></tr>
+                        <tr><td>অগ্রিম</td><td><input type="number" id="advance" value="0" min="0" oninput="calculateTotals()" style="text-align:right; width: 120px; padding: 8px;"></td></tr>
+                        <tr><td><strong>বাকি</strong></td><td class="text-right" id="due"><strong>0.00</strong></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="clearfix"></div>
+            <button class="btn btn-print" id="print-save-btn" onclick="saveAndShowPreview()">সংরক্ষণ ও প্রিভিউ দেখুন 📄</button>
+        </div>
+    </div>
+
+    <div id="history-page" style="display: none;">
+        <div class="container">
+            <div class="header-bar">
+                 <h1 id="history-page-title">সংরক্ষিত মেমোর তালিকা</h1>
+            </div>
+            <!-- ইতিহাস পেজের জন্য ড্রপডাউন -->
+            <div class="shop-dropdown">
+                <div class="custom-dropdown" id="history-custom-dropdown">
+                    <div class="custom-dropdown-select" id="history-dropdown-select">
+                        <div class="custom-dropdown-selected">
+                            <span id="selected-history-shop-text">সকল দোকান</span>
+                        </div>
+                        <svg class="custom-dropdown-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="custom-dropdown-options" id="history-dropdown-options">
+                        <!-- Options will be populated dynamically -->
+                    </div>
+                </div>
+            </div>
+            <ul id="history-list"></ul>
+        </div>
+        <button class="fab-add" id="fab-add-memo">+</button>
+    </div>
+
+    <!-- === দোকান ব্যবস্থাপনা পেজ === -->
+    <div id="shop-page" style="display: none;">
+        <div class="container">
+            <div class="header-bar">
+                <h1>দোকান ব্যবস্থাপনা</h1>
+            </div>
+            
+            <div class="shop-management-section">
+                <div class="shop-management-header">
+                    <h2 class="shop-management-title">আপনার দোকানসমূহ</h2>
+                    <button class="btn btn-add" onclick="openAddShopModal()">+ নতুন দোকান</button>
+                </div>
+                
+                <div id="shop-list-container" class="shop-list">
+                    <!-- দোকানের তালিকা এখানে লোড হবে -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bottom-nav">
+        <a href="#" class="nav-item active" id="bottom-nav-home">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            <span>হোম</span>
+        </a>
+        <a href="#" class="nav-item" id="bottom-nav-memo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            <span>মেমো</span>
+        </a>
+        <a href="#" class="nav-item" id="bottom-nav-history">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            <span>লিস্ট</span>
+        </a>
+        <a href="#" class="nav-item" id="bottom-nav-shop">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+            <span>দোকান</span>
+        </a>
+    </div>
+
+    <!-- Modals -->
     <div id="viewMemoModal" class="modal">
         <div class="modal-content" style="max-width: 1100px; margin: 30px auto;">
             <div class="modal-header">
@@ -160,12 +1228,55 @@
                     <span class="modal-close-btn" id="view-modal-close-btn">&times;</span>
                 </div>
             </div>
-            <div id="memo-preview-area" style="margin-top: 20px;">
-                <!-- Memo content will be injected here by JavaScript -->
+            <div id="memo-preview-area" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+    
+    <div id="shopEditModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="shop-modal-title">দোকানের তথ্য যোগ করুন</h2>
+                <span class="modal-close-btn" id="shop-edit-modal-close-btn">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="shop-edit-form">
+                    <label for="shop-name-input">দোকানের নাম</label>
+                    <input type="text" id="shop-name-input" placeholder="আব্দুল্লাহ ইলেকট্রিক এন্ড ইলেকট্রনিক্স">
+                    <label for="proprietor-name-input">প্রোঃ নাম</label>
+                    <input type="text" id="proprietor-name-input" placeholder="মোঃ আব্দুল্লাহ মোল্লা">
+                    <label for="shop-details1-input">দোকানের বিবরণ</label>
+                    <input type="text" id="shop-details1-input" placeholder="এখানে সকল প্রকার ইলেকট্রনিক ও ইলেকট্রনিক্স আইটেম...">
+                    <label for="shop-contact-input">যোগাযোগ</label>
+                    <input type="text" id="shop-contact-input" placeholder="যোগাযোগ: ০১৩২৬-১৭০৭৭৭">
+                    <label for="shop-logo-input">লোগো URL</label>
+                    <input type="text" id="shop-logo-input" placeholder="https://i.ibb.co/...">
+                    <button class="btn btn-add" id="save-shop-info-btn" style="width: 100%; margin-top: 20px;">সংরক্ষণ করুন</button>
+                </div>
             </div>
         </div>
     </div>
 
+    <div id="privacyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>গোপনীয়তা নীতি (Privacy Policy)</h2>
+                <span class="modal-close-btn" id="privacy-modal-close-btn">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>আমরা আপনার তথ্যের গোপনীয়তাকে সম্মান করি। এই অ্যাপটি ব্যবহার করার সময় আপনার প্রদান করা সকল তথ্য সুরক্ষিত রাখা আমাদের দায়িত্ব।</p>
+                <h3>কোন তথ্য সংগ্রহ করা হয়?</h3>
+                <p>এই অ্যাপটি শুধুমাত্র আপনার তৈরি করা বিলের তথ্য সংরক্ষণ করে, যার মধ্যে অন্তর্ভুক্ত থাকতে পারে:</p>
+                <ul>
+                    <li>মেমো নম্বর, ক্রেতার নাম এবং ঠিকানা।</li>
+                    <li>লেনদেনের তারিখ এবং ডেলিভারির তারিখ।</li>
+                    <li>পণ্যের বিবরণ, পরিমাণ, দর এবং মোট টাকার হিসাব।</li>
+                </ul>
+                <h3>কীভাবে তথ্য ব্যবহার করা হয়?</h3>
+                <p>আপনার সংরক্ষিত বিলের তথ্য শুধুমাত্র আপনার ব্যবসায়িক হিসাব ব্যবস্থাপনার জন্য ব্যবহার করা হয়। এই তথ্য অন্য কোনো ব্যক্তি বা প্রতিষ্ঠানের সাথে শেয়ার করা হয় না। সকল তথ্য Google Firebase-এর সুরক্ষিত ডাটাবেসে সংরক্ষণ করা হয়, যা শুধুমাত্র আপনিই অ্যাক্সেস করতে পারেন।</p>
+                <p>আমরা আপনার তথ্যের নিরাপত্তা নিশ্চিত করতে প্রতিশ্রুতিবদ্ধ।</p>
+            </div>
+        </div>
+    </div>
 
     <script>
         // --- Firebase Configuration ---
@@ -178,127 +1289,922 @@
             messagingSenderId: "679519684721",
             appId: "1:679519684721:web:56b78c83b7fc66c30c73d0"
         };
+        
+        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         
-        let currentlyEditingKey = null;
+        // Global variables
+        let currentlyEditing = null;
+        let selectedShopId = null;
+        let shops = {};
+        let currentSlide = 0;
+        let slideInterval;
 
-        function openNav() { document.getElementById("mySidenav").style.width = "250px"; }
-        function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
-        
-        function updateSerialNumbers(){document.querySelectorAll('#bill-table tbody tr').forEach((row,index)=>{row.cells[0].textContent=index+1})}
+        // --- ন্যাভিগেশন বার অটো-হাইড ফাংশন ---
+        let lastScrollTop = 0;
+        const navbar = document.getElementById('navbar');
+        const bottomNav = document.querySelector('.bottom-nav'); // নতুন পরিবর্তন
+        const scrollThreshold = 100; // কত স্ক্রল করলে হাইড হবে
 
-        function calculateRow(element){
-            let row = element.closest('tr');
-            let quantity = parseFloat(row.querySelector('.quantity').value) || 0;
-            let price = parseFloat(row.querySelector('.price').value) || 0;
-            let amountInput = row.querySelector('.amount');
-            amountInput.value = (quantity * price).toFixed(2);
-            calculateTotals();
-        }
-
-        function calculateTotals(){let grandTotal=0;document.querySelectorAll('.amount').forEach(field=>{grandTotal+=parseFloat(field.value)||0});document.getElementById('grand-total').innerText=grandTotal.toFixed(2);let advance=parseFloat(document.getElementById('advance').value)||0;document.getElementById('due').innerText=(grandTotal-advance).toFixed(2)}
-        
-        function addRow(){
-            let tableBody=document.querySelector('#bill-table tbody');
-            let newRow=tableBody.insertRow();
-            newRow.innerHTML=`<td></td><td><input type="text" class="product-name" placeholder="পণ্যের বিবরণ"></td><td><input type="number" class="quantity" value="1" min="1" oninput="calculateRow(this);"></td><td><input type="number" class="price" value="0" min="0" oninput="calculateRow(this);"></td><td><input type="text" class="amount" value="0.00" readonly></td><td><button class="btn btn-remove" onclick="removeRow(this)">🗑️</button></td>`;
-            updateSerialNumbers();
-            newRow.querySelector('.product-name').focus();
-        }
-
-        function removeRow(button){if(document.querySelectorAll('#bill-table tbody tr').length>1){button.closest('tr').remove();calculateTotals();updateSerialNumbers()}else{alert("শেষ সারিটি মোছা যাবে না।")}}
-        function numberToWordsBengali(num){const single=['','এক','দুই','তিন','চার','পাঁচ','ছয়','সাত','আট','নয়'],teens=['দশ','এগারো','বারো','তেরো','চোদ্দ','পনেরো','ষোল','সতেরো','আঠারো','উনিশ'],tens=['','','বিশ','ত্রিশ','চল্লিশ','পঞ্চাশ','ষাট','সত্তর','আশি','নব্বই'],powers=['',' হাজার',' লক্ষ',' কোটি'];function convert(n){if(n<10)return single[n];if(n<20)return teens[n-10];if(n<100)return tens[Math.floor(n/10)]+(n%10!==0?' '+single[n%10]:'');if(n<1000)return single[Math.floor(n/100)]+' শত'+(n%100!==0?' '+convert(n%100):'');return convert(Math.floor(n/1000))+' হাজার'+(n%1000!==0?' '+convert(n%1000):'')}if(num===0)return'শূন্য';let words='',i=0;while(num>0){let chunk=(i===0)?num%1000:num%100;if(chunk>0){words=convert(chunk)+powers[i]+' '+words}num=(i===0)?Math.floor(num/1000):Math.floor(num/100);i++}return words.trim()}
-
-        function collectMemoData() {
-            let items=[];
-            document.querySelectorAll('#bill-table tbody tr').forEach(row=>{items.push({name:row.querySelector('.product-name').value,quantity:row.querySelector('.quantity').value,price:row.querySelector('.price').value,amount:row.querySelector('.amount').value})});
-            return {memoNo:document.getElementById('memo-no').value,customerName:document.getElementById('customer-name').value,customerAddress:document.getElementById('customer-address').value,transactionDate:document.getElementById('transaction-date').value,deliveryDate:document.getElementById('delivery-date').value,advance:document.getElementById('advance').value,items:items,grandTotal:document.getElementById('grand-total').innerText,due:document.getElementById('due').innerText,timestamp:Date.now()};
-        }
-
-        async function saveBillToHistory() {
-            const memo = collectMemoData();
-            if (!memo.customerName && !memo.memoNo) {
-                alert('অনুগ্রহ করে মেমো নং অথবা ক্রেতার নাম লিখুন।'); return;
+        function handleNavbarScroll() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (scrollTop > lastScrollTop && scrollTop > scrollThreshold) {
+                navbar.classList.add('hidden');
+                if (bottomNav) bottomNav.classList.add('hidden'); // নতুন পরিবর্তন
+            } else {
+                navbar.classList.remove('hidden');
+                if (bottomNav) bottomNav.classList.remove('hidden'); // নতুন পরিবর্তন
             }
-            try { await database.ref('memos').push(memo); alert('মেমো সফলভাবে সংরক্ষণ করা হয়েছে!'); } 
-            catch (error) { console.error("Firebase save error: ", error); alert('মেমো সংরক্ষণ করা যায়নি।'); }
-        }
-        
-        async function updateBillInHistory() {
-            if (!currentlyEditingKey) return;
-            const memo = collectMemoData();
-            try {
-                await database.ref('memos/' + currentlyEditingKey).update(memo);
-                alert('মেমো সফলভাবে আপডেট করা হয়েছে!');
-            } catch (error) { console.error("Firebase update error: ", error); alert('মেমো আপডেট করা যায়নি।'); }
+            
+            lastScrollTop = scrollTop;
         }
 
-        function displayHistory() {
-            const historyList=document.getElementById('history-list'); const memosRef=database.ref('memos').orderByChild('timestamp');
-            memosRef.on('value',(snapshot)=>{historyList.innerHTML='';if(!snapshot.exists()){historyList.innerHTML='<li>কোনো সংরক্ষিত মেমো পাওয়া যায়নি।</li>';return}
-                let memos=[]; snapshot.forEach(childSnapshot=>{memos.push({key:childSnapshot.key,...childSnapshot.val()})});
-                memos.reverse().forEach(memo=>{const transactionDate=memo.transactionDate?new Date(memo.transactionDate).toLocaleDateString('bn-BD'):'N/A';const listItem=document.createElement('li');
-                listItem.innerHTML=`<span><strong>${memo.memoNo||'N/A'}</strong> - ${memo.customerName||'N/A'} (${transactionDate}) - মোট: ${memo.grandTotal}</span><div class="controls"><button class="btn btn-add" onclick="viewMemoFromHistory('${memo.key}')">দেখুন</button><button class="btn" style="background:#f59e0b" onclick="loadMemoFromHistory('${memo.key}')">সম্পাদনা</button><button class="btn btn-delete" onclick="deleteMemoFromHistory('${memo.key}')">মুছুন</button></div>`;historyList.appendChild(listItem)})
+        window.addEventListener('scroll', handleNavbarScroll);
+
+        let touchStartY = 0;
+        let touchEndY = 0;
+
+        document.addEventListener('touchstart', e => {
+            touchStartY = e.changedTouches[0].screenY;
+        });
+
+        document.addEventListener('touchend', e => {
+            touchEndY = e.changedTouches[0].screenY;
+            handleTouchScroll();
+        });
+
+        function handleTouchScroll() {
+            if (touchStartY - touchEndY > 50) { // Scrolling down
+                navbar.classList.add('hidden');
+                if (bottomNav) bottomNav.classList.add('hidden'); // নতুন পরিবর্তন
+            } else if (touchEndY - touchStartY > 50) { // Scrolling up
+                navbar.classList.remove('hidden');
+                if (bottomNav) bottomNav.classList.remove('hidden'); // নতুন পরিবর্তন
+            }
+        }
+
+        window.addEventListener('load', () => {
+            navbar.classList.remove('hidden');
+            if (bottomNav) bottomNav.classList.remove('hidden'); // নতুন পরিবর্তন
+        });
+
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                navbar.classList.remove('hidden');
+                if (bottomNav) bottomNav.classList.remove('hidden'); // নতুন পরিবর্তন
+            }
+        });
+
+        // --- Page Navigation & UI ---
+        const mainContent = document.getElementById('main-content');
+        const historyPage = document.getElementById('history-page');
+        const shopPage = document.getElementById('shop-page');
+        const homePage = document.getElementById('home-page');
+        const fabAddMemo = document.getElementById('fab-add-memo');
+
+        function showHomeDashboard() {
+            homePage.style.display = 'block';
+            mainContent.style.display = 'none';
+            historyPage.style.display = 'none';
+            shopPage.style.display = 'none';
+            handleActiveNav('bottom-nav-home');
+            loadHomeStats();
+            startSlider();
+        }
+        
+        function showMemoPage() {
+            homePage.style.display = 'none';
+            mainContent.style.display = 'block';
+            historyPage.style.display = 'none';
+            shopPage.style.display = 'none';
+            handleActiveNav('bottom-nav-memo');
+            stopSlider();
+        }
+        
+        function showHistoryPage(showFabButton = true) {
+            homePage.style.display = 'none';
+            mainContent.style.display = 'none';
+            historyPage.style.display = 'block';
+            shopPage.style.display = 'none';
+            if (fabAddMemo) {
+                fabAddMemo.style.display = showFabButton ? 'block' : 'none';
+            }
+            historyView = 'dates';
+            selectedHistoryDate = null;
+            displayHistory();
+            handleActiveNav('bottom-nav-history');
+            stopSlider();
+        }
+        
+        function showShopPage() {
+            homePage.style.display = 'none';
+            mainContent.style.display = 'none';
+            historyPage.style.display = 'none';
+            shopPage.style.display = 'block';
+            handleActiveNav('bottom-nav-shop');
+            loadShopList();
+            stopSlider();
+        }
+
+        function handleActiveNav(activeId){
+            document.querySelectorAll('.nav-item').forEach(item=>{
+                item.classList.remove('active');
+            });
+            if(document.getElementById(activeId)){
+                document.getElementById(activeId).classList.add('active');
+            }
+        }
+
+        // --- SIDENAV FUNCTIONS ---
+        function openNav() {
+            document.getElementById("mySidenav").style.width = "280px";
+            // navbar এখন আর ব্লার হবে না
+            const contentToBlur = document.querySelectorAll('#main-content, #history-page, #shop-page, #home-page, .bottom-nav, .fab-add');
+            contentToBlur.forEach(el => {
+                if (el) el.classList.add('content-blur');
+            });
+        }
+
+        function closeNav() {
+            document.getElementById("mySidenav").style.width = "0";
+            // navbar এখন আর ব্লার হবে না
+            const contentToBlur = document.querySelectorAll('#main-content, #history-page, #shop-page, #home-page, .bottom-nav, .fab-add');
+            contentToBlur.forEach(el => {
+                if (el) el.classList.remove('content-blur');
+            });
+        }
+
+        // --- 16:9 স্লাইডার ফাংশন ---
+        function initSlider() {
+            const slides = document.querySelectorAll('.slide');
+            const navContainer = document.getElementById('slider-nav');
+            
+            if (!navContainer) return;
+            
+            navContainer.innerHTML = '';
+            slides.forEach((_, index) => {
+                const dot = document.createElement('div');
+                dot.className = `nav-dot ${index === 0 ? 'active' : ''}`;
+                dot.onclick = () => goToSlide(index);
+                navContainer.appendChild(dot);
+            });
+            
+            updateSlider();
+        }
+
+        function startSlider() {
+            stopSlider();
+            slideInterval = setInterval(() => {
+                nextSlide();
+            }, 5000);
+        }
+
+        function stopSlider() {
+            if (slideInterval) {
+                clearInterval(slideInterval);
+                slideInterval = null;
+            }
+        }
+
+        function nextSlide() {
+            const slides = document.querySelectorAll('.slide');
+            if (slides.length === 0) return;
+            
+            currentSlide = (currentSlide + 1) % slides.length;
+            updateSlider();
+        }
+
+        function prevSlide() {
+            const slides = document.querySelectorAll('.slide');
+            if (slides.length === 0) return;
+            
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            updateSlider();
+        }
+
+        function goToSlide(index) {
+            const slides = document.querySelectorAll('.slide');
+            if (slides.length === 0) return;
+            
+            currentSlide = index;
+            updateSlider();
+        }
+
+        function updateSlider() {
+            const slides = document.getElementById('slides');
+            const dots = document.querySelectorAll('.nav-dot');
+            
+            if (!slides) return;
+            
+            const slideWidth = 100;
+            slides.style.transform = `translateX(-${currentSlide * slideWidth}%)`;
+            
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+        }
+
+        // --- হোম পেজ ফাংশন ---
+        function loadHomeStats() {
+            const statsContainer = document.getElementById('home-stats');
+            if (!statsContainer) return;
+            
+            const memosRef = database.ref('memos');
+            memosRef.once('value').then((snapshot) => {
+                let totalMemos = 0;
+                let totalRevenue = 0;
+                let todayMemos = 0;
+                
+                const today = new Date().toISOString().split('T')[0];
+                
+                if (snapshot.exists()) {
+                    snapshot.forEach((dateSnapshot) => {
+                        const memosOnDate = dateSnapshot.val();
+                        const memoCount = Object.keys(memosOnDate).length;
+                        totalMemos += memoCount;
+                        
+                        if (dateSnapshot.key === today) {
+                            todayMemos = memoCount;
+                        }
+                        
+                        for (const key in memosOnDate) {
+                            const memo = memosOnDate[key];
+                            totalRevenue += parseFloat(memo.grandTotal || 0);
+                        }
+                    });
+                }
+                
+                statsContainer.innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-number">${totalMemos}</div>
+                        <div class="stat-label">মোট মেমো</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${todayMemos}</div>
+                        <div class="stat-label">আজকের মেমো</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">৳${totalRevenue.toFixed(2)}</div>
+                        <div class="stat-label">মোট বিক্রয়</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${Object.keys(shops).length}</div>
+                        <div class="stat-label">দোকান সংখ্যা</div>
+                    </div>
+                `;
+            }).catch(error => {
+                console.error("Error loading stats:", error);
+                statsContainer.innerHTML = `
+                    <div class="stat-card"><div class="stat-number">0</div><div class="stat-label">মোট মেমো</div></div>
+                    <div class="stat-card"><div class="stat-number">0</div><div class="stat-label">আজকের মেমো</div></div>
+                    <div class="stat-card"><div class="stat-number">৳0.00</div><div class="stat-label">মোট বিক্রয়</div></div>
+                    <div class="stat-card"><div class="stat-number">${Object.keys(shops).length}</div><div class="stat-label">দোকান সংখ্যা</div></div>
+                `;
+            });
+        }
+
+        // --- Custom Dropdown Functions ---
+        function initializeCustomDropdowns() {
+            const shopDropdown = document.getElementById('shop-custom-dropdown');
+            const shopDropdownSelect = document.getElementById('shop-dropdown-select');
+            const shopDropdownOptions = document.getElementById('shop-dropdown-options');
+            
+            const historyDropdown = document.getElementById('history-custom-dropdown');
+            const historyDropdownSelect = document.getElementById('history-dropdown-select');
+            const historyDropdownOptions = document.getElementById('history-dropdown-options');
+            
+            if (shopDropdownSelect && shopDropdownOptions) {
+                shopDropdownSelect.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    shopDropdown.classList.toggle('selected');
+                    if (historyDropdown) historyDropdown.classList.remove('selected');
+                });
+                
+                shopDropdownOptions.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
+            
+            if (historyDropdownSelect && historyDropdownOptions) {
+                historyDropdownSelect.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    historyDropdown.classList.toggle('selected');
+                    if (shopDropdown) shopDropdown.classList.remove('selected');
+                });
+                
+                historyDropdownOptions.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
+            
+            document.addEventListener('click', function() {
+                if (shopDropdown) shopDropdown.classList.remove('selected');
+                if (historyDropdown) historyDropdown.classList.remove('selected');
             });
         }
         
-        async function deleteMemoFromHistory(key) {
-            if (confirm('আপনি কি নিশ্চিতভাবে এই মেমোটি মুছতে চান? এটি ফেরত আনা যাবে না।')) {
-                try { await database.ref('memos/' + key).remove(); } 
-                catch (error) { console.error("Firebase delete error: ", error); alert('মেমোটি মোছা যায়নি।');}
+        // --- Shop Management Functions ---
+        function fetchShops() {
+            const shopsRef = database.ref('shops');
+            shopsRef.on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    shops = snapshot.val();
+                    updateCustomDropdowns();
+                    
+                    if (!selectedShopId && Object.keys(shops).length > 0) {
+                        selectedShopId = Object.keys(shops)[0];
+                        updateUIWithShopInfo();
+                    }
+                } else {
+                    createDefaultShop();
+                }
+            }, (error) => {
+                console.error("Error fetching shops:", error);
+            });
+        }
+
+        function createDefaultShop() {
+            const defaultShop = {
+                name: "অন্যান্য দোকান",
+                proprietor: "প্রোঃ",
+                details1: "বিবরণ এখানে লিখুন",
+                contact: "যোগাযোগঃ",
+                logoUrl: "https://i.ibb.co/fYwdd8h/IMG-20251107-WA0006.jpg"
+            };
+            
+            const newShopRef = database.ref('shops').push();
+            newShopRef.set(defaultShop)
+                .then(() => {
+                    selectedShopId = newShopRef.key;
+                    updateCustomDropdowns();
+                })
+                .catch(error => {
+                    console.error("Error creating default shop:", error);
+                });
+        }
+
+        function updateCustomDropdowns() {
+            updateMainDropdown();
+            updateHistoryDropdown();
+            updateUIWithShopInfo();
+        }
+
+        function updateMainDropdown() {
+            const dropdownOptions = document.getElementById('shop-dropdown-options');
+            const selectedText = document.getElementById('selected-shop-text');
+            
+            if (!dropdownOptions || !selectedText) return;
+            
+            dropdownOptions.innerHTML = '';
+            
+            const defaultOption = document.createElement('div');
+            defaultOption.className = 'custom-dropdown-option';
+            defaultOption.innerHTML = `<div class="custom-dropdown-option-text"><div class="custom-dropdown-option-name">দোকান নির্বাচন করুন...</div></div>`;
+            defaultOption.onclick = () => {
+                selectedShopId = null;
+                selectedText.textContent = 'দোকান নির্বাচন করুন...';
+                const shopDropdown = document.getElementById('shop-custom-dropdown');
+                if (shopDropdown) shopDropdown.classList.remove('selected');
+                updateUIWithShopInfo();
+            };
+            dropdownOptions.appendChild(defaultOption);
+            
+            for (const shopId in shops) {
+                const shop = shops[shopId];
+                const option = document.createElement('div');
+                option.className = `custom-dropdown-option ${selectedShopId === shopId ? 'selected' : ''}`;
+                option.innerHTML = `
+                    <img src="${shop.logoUrl}" alt="${shop.name}" class="custom-dropdown-option-logo" onerror="this.src='https://i.ibb.co/fYwdd8h/IMG-20251107-WA0006.jpg'">
+                    <div class="custom-dropdown-option-text">
+                        <div class="custom-dropdown-option-name">${shop.name}</div>
+                        <div class="custom-dropdown-option-contact">${shop.contact}</div>
+                    </div>
+                `;
+                option.onclick = () => {
+                    selectedShopId = shopId;
+                    selectedText.textContent = shop.name;
+                    const shopDropdown = document.getElementById('shop-custom-dropdown');
+                    if (shopDropdown) shopDropdown.classList.remove('selected');
+                    updateUIWithShopInfo();
+                };
+                dropdownOptions.appendChild(option);
+                
+                if (selectedShopId === shopId) {
+                    selectedText.textContent = shop.name;
+                }
             }
         }
 
-        async function loadMemoFromHistory(key) {
-            try {
-                const snapshot = await database.ref('memos/'+key).once('value'); const memo=snapshot.val(); if(!memo){alert('মেমোটি খুঁজে পাওয়া যায়নি।');return}
-                document.getElementById('memo-no').value=memo.memoNo || ''; document.getElementById('customer-name').value=memo.customerName || ''; document.getElementById('customer-address').value=memo.customerAddress || ''; document.getElementById('transaction-date').value=memo.transactionDate || ''; document.getElementById('delivery-date').value=memo.deliveryDate || ''; document.getElementById('advance').value=memo.advance || 0;
-                const tableBody=document.querySelector('#bill-table tbody'); tableBody.innerHTML='';
-                (memo.items || []).forEach(item=>{
+        function updateHistoryDropdown() {
+            const dropdownOptions = document.getElementById('history-dropdown-options');
+            const selectedText = document.getElementById('selected-history-shop-text');
+            
+            if (!dropdownOptions || !selectedText) return;
+            
+            dropdownOptions.innerHTML = '';
+            
+            const allOption = document.createElement('div');
+            allOption.className = `custom-dropdown-option ${!selectedShopId ? 'selected' : ''}`;
+            allOption.innerHTML = `<div class="custom-dropdown-option-text"><div class="custom-dropdown-option-name">সকল দোকান</div></div>`;
+            allOption.onclick = () => {
+                selectedShopId = null;
+                selectedText.textContent = 'সকল দোকান';
+                const historyDropdown = document.getElementById('history-custom-dropdown');
+                if (historyDropdown) historyDropdown.classList.remove('selected');
+                displayHistory();
+            };
+            dropdownOptions.appendChild(allOption);
+            
+            for (const shopId in shops) {
+                const shop = shops[shopId];
+                const option = document.createElement('div');
+                option.className = `custom-dropdown-option ${selectedShopId === shopId ? 'selected' : ''}`;
+                option.innerHTML = `
+                    <img src="${shop.logoUrl}" alt="${shop.name}" class="custom-dropdown-option-logo" onerror="this.src='https://i.ibb.co/fYwdd8h/IMG-20251107-WA0006.jpg'">
+                    <div class="custom-dropdown-option-text">
+                        <div class="custom-dropdown-option-name">${shop.name}</div>
+                        <div class="custom-dropdown-option-contact">${shop.contact}</div>
+                    </div>
+                `;
+                option.onclick = () => {
+                    selectedShopId = shopId;
+                    selectedText.textContent = shop.name;
+                    const historyDropdown = document.getElementById('history-custom-dropdown');
+                    if (historyDropdown) historyDropdown.classList.remove('selected');
+                    displayHistory();
+                };
+                dropdownOptions.appendChild(option);
+                
+                if (selectedShopId === shopId) {
+                    selectedText.textContent = shop.name;
+                }
+            }
+        }
+
+        function updateUIWithShopInfo() {
+            const headerLogo = document.getElementById('main-header-logo');
+            const headerTitle = document.getElementById('main-header-title');
+            
+            if (headerLogo && headerTitle) {
+                if (selectedShopId && shops[selectedShopId]) {
+                    const shop = shops[selectedShopId];
+                    headerLogo.src = shop.logoUrl;
+                    headerTitle.innerText = shop.name;
+                } else {
+                    // যখন কোনো দোকান সিলেক্ট করা থাকবে না, ডিফল্ট দেখাবে
+                    headerLogo.src = "https://i.ibb.co/fYwdd8h/IMG-20251107-WA0006.jpg";
+                    headerTitle.innerText = "বিল ম্যানেজমেন্ট সিস্টেম";
+                }
+            }
+        }
+
+        function loadShopList() {
+            const shopListContainer = document.getElementById('shop-list-container');
+            if (!shopListContainer) return;
+            
+            if (Object.keys(shops).length === 0) {
+                shopListContainer.innerHTML = `
+                    <div class="empty-state-container">
+                        <div class="empty-state-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                        </div>
+                        <h2 class="empty-state-title">কোন দোকান নেই</h2>
+                        <p class="empty-state-subtitle">নতুন দোকান তৈরি শুরু করুন</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            shopListContainer.innerHTML = '';
+            
+            for (const shopId in shops) {
+                const shop = shops[shopId];
+                const shopItem = document.createElement('div');
+                shopItem.className = 'shop-item';
+                shopItem.innerHTML = `
+                    <img src="${shop.logoUrl}" alt="${shop.name}" class="shop-item-logo" onerror="this.src='https://i.ibb.co/fYwdd8h/IMG-20251107-WA0006.jpg'">
+                    <div class="shop-item-info">
+                        <h3 class="shop-item-name">${shop.name}</h3>
+                        <p class="shop-item-details">${shop.proprietor}</p>
+                        <p class="shop-item-details">${shop.contact}</p>
+                    </div>
+                    <div class="shop-item-actions">
+                        <button class="shop-item-action-btn shop-item-edit" onclick="editShop('${shopId}')">সম্পাদনা</button>
+                        <button class="shop-item-action-btn shop-item-delete" onclick="deleteShop('${shopId}')">মুছুন</button>
+                    </div>
+                `;
+                shopListContainer.appendChild(shopItem);
+            }
+        }
+
+        function openAddShopModal() {
+            document.getElementById('shop-modal-title').textContent = 'নতুন দোকান যোগ করুন';
+            document.getElementById('shop-name-input').value = '';
+            document.getElementById('proprietor-name-input').value = '';
+            document.getElementById('shop-details1-input').value = '';
+            document.getElementById('shop-contact-input').value = '';
+            document.getElementById('shop-logo-input').value = '';
+            document.getElementById('save-shop-info-btn').removeAttribute('data-shop-id');
+            document.getElementById('shopEditModal').style.display = 'block';
+        }
+
+        function editShop(shopId) {
+            const shop = shops[shopId];
+            document.getElementById('shop-modal-title').textContent = 'দোকান সম্পাদনা করুন';
+            document.getElementById('shop-name-input').value = shop.name || '';
+            document.getElementById('proprietor-name-input').value = shop.proprietor || '';
+            document.getElementById('shop-details1-input').value = shop.details1 || '';
+            document.getElementById('shop-contact-input').value = shop.contact || '';
+            document.getElementById('shop-logo-input').value = shop.logoUrl || '';
+            
+            document.getElementById('save-shop-info-btn').setAttribute('data-shop-id', shopId);
+            document.getElementById('shopEditModal').style.display = 'block';
+        }
+
+        function deleteShop(shopId) {
+            if (confirm('আপনি কি নিশ্চিতভাবে এই দোকানটি মুছতে চান? এই দোকানের সকল মেমোও মুছে যাবে।')) {
+                const memosRef = database.ref('memos');
+                memosRef.once('value').then((snapshot) => {
+                    const updates = {};
+                    
+                    if (snapshot.exists()) {
+                        snapshot.forEach((dateSnapshot) => {
+                            dateSnapshot.forEach((memoSnapshot) => {
+                                const memo = memoSnapshot.val();
+                                if (memo.shopId === shopId) {
+                                    updates[`memos/${dateSnapshot.key}/${memoSnapshot.key}`] = null;
+                                }
+                            });
+                        });
+                    }
+                    
+                    updates[`shops/${shopId}`] = null;
+                    
+                    return database.ref().update(updates);
+                }).then(() => {
+                    alert('দোকান সফলভাবে মুছে ফেলা হয়েছে!');
+                    if (selectedShopId === shopId) {
+                        selectedShopId = Object.keys(shops)[0] || null;
+                    }
+                    loadShopList();
+                }).catch((error) => {
+                    console.error("Error deleting shop:", error);
+                    alert('দোকান মুছে ফেলা যায়নি।');
+                });
+            }
+        }
+
+        // --- Bill Management Functions ---
+        function updateSerialNumbers(){
+            document.querySelectorAll('#bill-table tbody tr').forEach((row,index)=>{
+                row.cells[0].textContent=index+1;
+            });
+        }
+        
+        function calculateRow(element){
+            let row=element.closest('tr');
+            let quantity=parseFloat(row.querySelector('.quantity').value)||0;
+            let price=parseFloat(row.querySelector('.price').value)||0;
+            row.querySelector('.amount').value=(quantity*price).toFixed(2);
+            calculateTotals();
+        }
+        
+        function calculateTotals(){
+            let grandTotal=0;
+            document.querySelectorAll('.amount').forEach(field=>{
+                grandTotal+=parseFloat(field.value)||0;
+            });
+            const grandTotalElement = document.getElementById('grand-total');
+            const dueElement = document.getElementById('due');
+            
+            if (grandTotalElement) grandTotalElement.innerText=grandTotal.toFixed(2);
+            let advance=parseFloat(document.getElementById('advance').value)||0;
+            if (dueElement) dueElement.innerText=(grandTotal-advance).toFixed(2);
+        }
+        
+        function addRow(){
+            let tableBody=document.querySelector('#bill-table tbody');
+            if (!tableBody) return;
+            
+            let newRow=tableBody.insertRow();
+            newRow.innerHTML=`<td></td><td><input type="text" class="product-name" placeholder="পণ্যের বিবরণ"></td><td><input type="number" class="quantity" value="1" min="1" oninput="calculateRow(this);"></td><td><input type="number" class="price" value="0" min="0" oninput="calculateRow(this);"></td><td><input type="text" class="amount" value="0.00" readonly></td><td><button class="btn btn-remove" onclick="removeRow(this)">🗑️</button></td>`;
+            updateSerialNumbers();
+            const productNameInput = newRow.querySelector('.product-name');
+            if (productNameInput) productNameInput.focus();
+        }
+        
+        function removeRow(button){
+            if(document.querySelectorAll('#bill-table tbody tr').length>1){
+                button.closest('tr').remove();
+                calculateTotals();
+                updateSerialNumbers();
+            }else{
+                alert("শেষ সারিটি মোছা যাবে না।");
+            }
+        }
+        
+        function collectMemoData(){
+            let items=[];
+            document.querySelectorAll('#bill-table tbody tr').forEach(row=>{
+                const productName = row.querySelector('.product-name');
+                const quantity = row.querySelector('.quantity');
+                const price = row.querySelector('.price');
+                const amount = row.querySelector('.amount');
+                
+                if (productName && quantity && price && amount) {
+                    items.push({
+                        name: productName.value,
+                        quantity: quantity.value,
+                        price: price.value,
+                        amount: amount.value
+                    });
+                }
+            });
+            
+            const memoNo = document.getElementById('memo-no');
+            const customerName = document.getElementById('customer-name');
+            const customerAddress = document.getElementById('customer-address');
+            const transactionDate = document.getElementById('transaction-date');
+            const deliveryDate = document.getElementById('delivery-date');
+            const advance = document.getElementById('advance');
+            const grandTotal = document.getElementById('grand-total');
+            const due = document.getElementById('due');
+            
+            return {
+                memoNo: memoNo ? memoNo.value : '',
+                customerName: customerName ? customerName.value : '',
+                customerAddress: customerAddress ? customerAddress.value : '',
+                transactionDate: transactionDate ? transactionDate.value : '',
+                deliveryDate: deliveryDate ? deliveryDate.value : '',
+                advance: advance ? advance.value : '0',
+                items: items,
+                grandTotal: grandTotal ? grandTotal.innerText : '0.00',
+                due: due ? due.innerText : '0.00',
+                timestamp: Date.now(),
+                shopId: selectedShopId
+            };
+        }
+        
+        async function saveBillToHistory(){
+            const memo=collectMemoData();
+            
+            if(!memo.customerName&&!memo.memoNo){
+                alert('অনুগ্রহ করে মেমো নং অথবা ক্রেতার নাম লিখুন।');
+                return;
+            }
+            
+            const formattedDate=memo.transactionDate;
+            if(!formattedDate){
+                alert('অনুগ্রহ করে লেনদেনের তারিখ নির্বাচন করুন।');
+                return;
+            }
+            
+            if(!memo.shopId){
+                alert('অনুগ্রহ করে একটি দোকান নির্বাচন করুন।');
+                return;
+            }
+            
+            try{
+                await database.ref('memos/'+formattedDate).push(memo);
+                return true; 
+            }catch(error){
+                console.error("Firebase save error: ",error);
+                alert('মেমো সংরক্ষণ করা যায়নি।');
+                return false;
+            }
+        }
+        
+        async function updateBillInHistory(){
+            if(!currentlyEditing) return;
+            
+            const memo=collectMemoData();
+            const newDate=memo.transactionDate;
+            if(!newDate){
+                alert('অনুগ্রহ করে লেনদেনের তারিখ নির্বাচন করুন।');
+                return;
+            }
+            
+            const oldDate=currentlyEditing.date;
+            const key=currentlyEditing.key;
+            
+            try{
+                if(oldDate===newDate){
+                    await database.ref('memos/'+oldDate+'/'+key).update(memo);
+                }else{
+                    const updates={};
+                    updates['memos/'+oldDate+'/'+key]=null;
+                    updates['memos/'+newDate+'/'+key]=memo;
+                    await database.ref().update(updates);
+                }
+                return true;
+            }catch(error){
+                console.error("Firebase update error: ",error);
+                alert('মেমো আপডেট করা যায়নি।');
+                return false;
+            }
+        }
+
+        let historyView = 'dates';
+        let selectedHistoryDate = null;
+
+        function displayHistory(){
+            if(historyView==='dates'){
+                displayDateList();
+            }else if(historyView==='memos'&&selectedHistoryDate){
+                displayMemosForDate(selectedHistoryDate);
+            }
+        }
+        
+        function displayDateList(){
+            const historyList=document.getElementById('history-list');
+            const historyPageTitle=document.getElementById('history-page-title');
+            
+            if (!historyList || !historyPageTitle) return;
+            
+            historyPageTitle.innerText='দৈনিক হিসাবের তালিকা';
+            
+            const memosRef=database.ref('memos').orderByKey();
+            memosRef.on('value',(snapshot)=>{
+                historyList.innerHTML='';
+                
+                if(!snapshot.exists()){
+                    historyList.innerHTML=`<div class="empty-state-container">
+                        <div class="empty-state-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        </div>
+                        <h2 class="empty-state-title">এখনো কোনো মেমো নেই!</h2>
+                        <p class="empty-state-subtitle">নতুন মেমো তৈরি করতে 'হোম' বাটনে অথবা '+' বাটনে ট্যাপ করুন।</p>
+                    </div>`;
+                    return;
+                }
+                
+                const dates=Object.keys(snapshot.val());
+                dates.reverse().forEach(date=>{
+                    const memosOnDate=snapshot.child(date).val();
+                    let memoCount=0;
+                    let dailyTotal=0;
+                    let dailyAdvance=0;
+                    
+                    for(const key in memosOnDate){
+                        const memo=memosOnDate[key];
+                        if(selectedShopId&&memo.shopId!==selectedShopId) continue;
+                        memoCount++;
+                        dailyTotal+=parseFloat(memo.grandTotal||0);
+                        dailyAdvance+=parseFloat(memo.advance||0);
+                    }
+                    
+                    if(memoCount===0) return;
+                    
+                    const numFormatOptions={minimumFractionDigits:2,maximumFractionDigits:2};
+                    const formattedDate=new Date(date).toLocaleDateString('bn-BD',{year:'numeric',month:'long',day:'numeric'});
+                    const listItem=document.createElement('li');
+                    listItem.className='date-history-item';
+                    listItem.innerHTML=`
+                        <div class="date-primary-info">
+                            <div class="date-header">🗓️ ${formattedDate}</div>
+                            <div class="memo-count">📝 ${memoCount.toLocaleString('bn-BD')} টি মেমো</div>
+                        </div>
+                        <div class="date-totals-info">
+                            <div class="total-item"><span>মোট অর্ডার:</span><strong>৳ ${dailyTotal.toLocaleString('bn-BD',numFormatOptions)}</strong></div>
+                            <div class="total-item advance"><span>মোট অগ্রিম:</span><strong>৳ ${dailyAdvance.toLocaleString('bn-BD',numFormatOptions)}</strong></div>
+                        </div>
+                    `;
+                    listItem.onclick=()=>{
+                        historyView='memos';
+                        selectedHistoryDate=date;
+                        displayHistory();
+                    };
+                    historyList.appendChild(listItem);
+                });
+            }, (error) => {
+                console.error("Error loading history:", error);
+                historyList.innerHTML=`<div class="empty-state-container"><h2 class="empty-state-title">ডেটা লোড করতে সমস্যা</h2><p class="empty-state-subtitle">দয়া করে আবার চেষ্টা করুন</p></div>`;
+            });
+        }
+        
+        function displayMemosForDate(date){
+            const historyList=document.getElementById('history-list');
+            const historyPageTitle=document.getElementById('history-page-title');
+            
+            if (!historyList || !historyPageTitle) return;
+            
+            const formattedDate=new Date(date).toLocaleDateString('bn-BD',{year:'numeric',month:'long',day:'numeric'});
+            historyPageTitle.innerHTML=`<a href="#" id="back-to-dates" style="text-decoration:none; color: var(--primary-blue); font-weight: 500; font-size:16px;">&#8592; তারিখে ফিরুন</a> <span style="color: #64748B;">|</span> ${formattedDate}`;
+            
+            const memosRef=database.ref('memos/'+date).orderByChild('timestamp');
+            memosRef.on('value',(snapshot)=>{
+                historyList.innerHTML='';
+                
+                if(!snapshot.exists()){
+                    historyList.innerHTML='<li class="memo-list-item">এই তারিখে কোনো মেমো পাওয়া যায়নি।</li>';
+                    return;
+                }
+                
+                let memos=[];
+                snapshot.forEach(childSnapshot=>{
+                    const memo=childSnapshot.val();
+                    if(selectedShopId&&memo.shopId!==selectedShopId) return;
+                    memos.push({ key:childSnapshot.key, ...memo });
+                });
+                
+                memos.reverse().forEach(memo=>{
+                    const listItem=document.createElement('li');
+                    listItem.className='memo-list-item';
+                    listItem.innerHTML=`
+                        <span><strong>${memo.memoNo||'N/A'}</strong> - ${memo.customerName||'N/A'} (মোট: ৳ ${parseFloat(memo.grandTotal||0).toLocaleString('bn-BD')})</span>
+                        <div class="controls">
+                            <button class="btn btn-add" onclick="viewMemoFromHistory('${memo.key}','${date}')">দেখুন</button>
+                            <button class="btn" style="background:#f59e0b" onclick="loadMemoFromHistory('${memo.key}','${date}')">সম্পাদনা</button>
+                            <button class="btn btn-delete" onclick="deleteMemoFromHistory('${memo.key}','${date}')">মুছুন</button>
+                        </div>
+                    `;
+                    historyList.appendChild(listItem);
+                });
+                
+                const backButton = document.getElementById('back-to-dates');
+                if (backButton) {
+                    backButton.onclick=(e)=>{
+                        e.preventDefault();
+                        historyView='dates';
+                        selectedHistoryDate=null;
+                        displayHistory();
+                    };
+                }
+            }, (error) => {
+                console.error("Error loading memos for date:", error);
+                historyList.innerHTML='<li class="memo-list-item">ডেটা লোড করতে সমস্যা হয়েছে।</li>';
+            });
+        }
+        
+        async function deleteMemoFromHistory(key,date){
+            if(confirm('আপনি কি নিশ্চিতভাবে এই মেমোটি মুছতে চান? এটি ফেরত আনা যাবে না।')){
+                try{
+                    await database.ref('memos/'+date+'/'+key).remove();
+                }catch(error){
+                    console.error("Firebase delete error: ",error);
+                    alert('মেমোটি মোছা যায়নি।');
+                }
+            }
+        }
+        
+        async function loadMemoFromHistory(key,date){
+            try{
+                const snapshot=await database.ref('memos/'+date+'/'+key).once('value');
+                const memo=snapshot.val();
+                if(!memo){
+                    alert('মেমোটি খুঁজে পাওয়া যায়নি।');
+                    return;
+                }
+                
+                document.getElementById('memo-no').value=memo.memoNo||'';
+                document.getElementById('customer-name').value=memo.customerName||'';
+                document.getElementById('customer-address').value=memo.customerAddress||'';
+                document.getElementById('transaction-date').value=memo.transactionDate||'';
+                document.getElementById('delivery-date').value=memo.deliveryDate||'';
+                document.getElementById('advance').value=memo.advance||0;
+                
+                selectedShopId = memo.shopId;
+                updateCustomDropdowns();
+                
+                const tableBody=document.querySelector('#bill-table tbody');
+                tableBody.innerHTML='';
+                
+                (memo.items||[]).forEach(item=>{
                     let newRow=tableBody.insertRow();
                     newRow.innerHTML=`<td></td><td><input type="text" class="product-name" value="${item.name||''}"></td><td><input type="number" class="quantity" value="${item.quantity||1}" min="1" oninput="calculateRow(this);"></td><td><input type="number" class="price" value="${item.price||0}" min="0" oninput="calculateRow(this);"></td><td><input type="text" class="amount" value="${item.amount||0}" readonly></td><td><button class="btn btn-remove" onclick="removeRow(this)">🗑️</button></td>`;
                 });
-                if ((memo.items || []).length === 0) { addRow(); } 
-                updateSerialNumbers(); calculateTotals();
                 
-                currentlyEditingKey = key;
-                document.getElementById('print-save-btn').innerText = 'আপডেট ও প্রিভিউ দেখুন 🔄';
-                closeModal('historyModal');
-            } catch (error) { console.error("Firebase load error: ", error); alert('মেমো লোড করা যায়নি।'); }
-        }
-        
-        async function saveAndShowPreview() { 
-            if (currentlyEditingKey) {
-                await updateBillInHistory();
-            } else {
-                await saveBillToHistory();
+                if((memo.items||[]).length===0){
+                    addRow();
+                }
+                
+                updateSerialNumbers();
+                calculateTotals();
+                currentlyEditing={key:key,date:date};
+                document.getElementById('print-save-btn').innerText='আপডেট ও প্রিভিউ দেখুন 🔄';
+                showMemoPage();
+            }catch(error){
+                console.error("Firebase load error: ",error);
+                alert('মেমো লোড করা যায়নি।');
             }
-            const currentMemoData = collectMemoData();
-            showMemoPreview(currentMemoData);
         }
         
-        function resetEditingState() {
-            currentlyEditingKey = null;
-            document.getElementById('print-save-btn').innerText = 'সংরক্ষণ ও প্রিভিউ দেখুন 📄';
-        }
-
-        function resetForm() {
-            document.getElementById('memo-no').value = '';
-            document.getElementById('customer-name').value = '';
-            document.getElementById('customer-address').value = '';
-            document.getElementById('transaction-date').valueAsDate = new Date();
-            document.getElementById('delivery-date').valueAsDate = new Date();
-            document.getElementById('advance').value = 0;
-            const tableBody = document.querySelector('#bill-table tbody');
-            tableBody.innerHTML = '';
-            addRow();
-            calculateTotals();
-            resetEditingState();
-            closeNav();
-        }
-
+        function numberToWordsBengali(num){const single=['','এক','দুই','তিন','চার','পাঁচ','ছয়','সাত','আট','নয়'],teens=['দশ','এগারো','বারো','তেরো','চোদ্দ','পনেরো','ষোল','সতেরো','আঠারো','উনিশ'],tens=['','','বিশ','ত্রিশ','চল্লিশ','পঞ্চাশ','ষাট','সত্তর','আশি','নব্বই'],powers=['',' হাজার',' লক্ষ',' কোটি'];function convert(n){if(n<10)return single[n];if(n<20)return teens[n-10];if(n<100)return tens[Math.floor(n/10)]+(n%10!==0?' '+single[n%10]:'');if(n<1000)return single[Math.floor(n/100)]+' শত'+(n%100!==0?' '+convert(n%100):'');return convert(Math.floor(n/1000))+' হাজার'+(n%1000!==0?' '+convert(n%1000):'')}if(num===0)return'শূন্য';let words='',i=0;while(num>0){let chunk=(i===0)?num%1000:num%100;if(chunk>0){words=convert(chunk)+powers[i]+' '+words}num=(i===0)?Math.floor(num/1000):Math.floor(num/100);i++}return words.trim()}
+        
+        // --- পরিবর্তিত প্রিন্ট জেনারেট ফাংশন ---
         function generatePrintContent(memoData) {
+            const staticShopInfo = {
+                name: "আব্দুল্লাহ ইলেকট্রিক এন্ড ইলেকট্রনিক্স",
+                proprietor: "প্রোঃ মোঃ আব্দুল্লাহ মোল্লা",
+                details1: "এখানে সকল প্রকার ইলেকট্রনিক ও ইলেকট্রনিক্স আইটেম সুলভ মূল্যে বিক্রয় এবং মেরামত করা হয়।",
+                contact: "যোগাযোগঃ ০১৩২৬-১৭০৭৭৭",
+                logoUrl: "https://i.ibb.co/fYwdd8h/IMG-20251107-WA0006.jpg"
+            };
+
+            const selectedShop = memoData.shopId && shops[memoData.shopId] ? shops[memoData.shopId] : null;
+            
             const { memoNo, customerName, customerAddress, transactionDate, deliveryDate, items, grandTotal, advance, due } = memoData;
             const formattedTransactionDate = transactionDate ? new Date(transactionDate).toLocaleDateString('bn-BD') : 'N/A';
             const formattedDeliveryDate = deliveryDate ? new Date(deliveryDate).toLocaleDateString('bn-BD') : 'N/A';
@@ -312,43 +2218,45 @@
                 const amount = (parseFloat(item.amount || 0)).toFixed(2);
                 tableRows += `<tr><td style="text-align:center;">${index + 1}</td><td>${pName}</td><td style="text-align:center;">${qty}</td><td style="text-align:right;">${price}</td><td style="text-align:right;">${amount}</td></tr>`;
             });
+
+            let selectedShopHtml = '';
+            if (selectedShop) {
+                selectedShopHtml = `
+                    <div class="selected-shop-info" style="margin-top: 30px; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px; background: #f8faff;">
+                        <h3 style="text-align: center; color: #0052D4; margin-top: 0; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px;">নির্বাচিত দোকান</h3>
+                        <div style="display: flex; align-items: center; gap: 20px;">
+                            <img src="${selectedShop.logoUrl}" alt="Shop Logo" style="height: 60px; border-radius: 8px;">
+                            <div>
+                                <p style="font-size: 16px; font-weight: 600; margin: 0;">${selectedShop.name}</p>
+                                <p style="font-size: 14px; color: #64748B; margin: 5px 0;">${selectedShop.proprietor}</p>
+                                <p style="font-size: 14px; color: #64748B; margin: 5px 0;">${selectedShop.contact}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
             
-            // NOTE: Added crossorigin="anonymous" to the img tag for html2canvas
             return `<html><head><title>Memo - ${customerName}</title><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"><style>body{font-family:'Poppins',sans-serif;margin:0;padding:20px;background-color:#f9fafb;color:#1e293b;font-size:14px; min-width: 750px;}.memo-container{max-width:800px;margin:20px auto;background:#fff;border-radius:15px;box-shadow:0 10px 30px rgba(0,0,0,.07);overflow:hidden;border:1px solid #e2e8f0}.memo-header{padding:30px;position:relative;background-color:#f8faff;border-bottom:1px solid #e2e8f0}.header-shape-left{position:absolute;top:0;left:0;width:45%;height:100%;background-color:#4FD1C5;clip-path:ellipse(100% 70% at 0% 50%);opacity:.1}.header-shape-right{position:absolute;top:-20px;right:20px;width:120px;height:120px;background-color:#F472B6;border-radius:30px;transform:rotate(45deg);opacity:.15}.shop-info{text-align:center;position:relative;z-index:2}.shop-logo{height:60px;border-radius:12px;margin-bottom:10px;border:3px solid #fff;box-shadow:0 4px 10px rgba(0,0,0,.08)}.shop-name{font-size:28px;font-weight:700;color:#0052D4;margin:0}.shop-details{font-size:13px;color:#64748B;margin:5px 0}.customer-info-section{display:grid;grid-template-columns:1fr 1fr;gap:12px 20px;padding:25px 30px;border-bottom:1px solid #e2e8f0}.info-field{display:flex;align-items:stretch;border-radius:8px;overflow:hidden;border:1px solid #e2e8f0;background:#f8faff}.info-field span{font-weight:600;padding:8px 12px;color:white;background-color:#4A90E2;display:flex;align-items:center;white-space:nowrap}.info-field p{margin:0;padding:8px 12px;width:100%; word-break: break-word;}.info-field.full-width{grid-column:1/-1}.memo-body{padding:25px 30px}
             .products-table{width:100%;border-collapse:collapse;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden; table-layout: fixed;}
             .products-table th,.products-table td{padding:12px 15px;text-align:left;border-bottom:1px solid #e2e8f0;word-wrap:break-word; overflow-wrap: break-word;}
             .products-table th{background-color:#4A90E2;color:#fff;font-size:13px;text-transform:uppercase;font-weight:600;letter-spacing:.5px}.products-table td{border-right:1px solid #e2e8f0}.products-table th{border-right:1px solid #63a5e8}.products-table th:last-child,.products-table td:last-child{border-right:none}.products-table tbody tr:nth-child(even){background-color:#f8faff}.memo-footer{padding:25px 30px 30px;display:flex;justify-content:space-between;align-items:flex-start;background-color:#f8faff;border-top:1px solid #e2e8f0}.notes{width:55%}.notes p{font-size:13px;color:#64748B;margin-top:0}.notes b{color:#1E293B}.totals-section{width:35%}.totals-table{width:100%;border-collapse:collapse}.totals-table td{padding:10px;font-size:15px;border-bottom:1px solid #e2e8f0}.totals-table tr:last-child td{border-bottom:none}.totals-table .label{color:#64748B}.totals-table .value{text-align:right;font-weight:700;color:#1E293B}.totals-table tr:nth-child(1) .value{border-left:4px solid #334155;padding-right:10px}.totals-table tr:nth-child(2) .value{border-left:4px solid #F472B6;padding-right:10px}.totals-table tr.due .value{font-size:18px;color:#0052D4;background-color:#e9efff;border-left:4px solid #0052D4;padding-right:10px}.signature-section{display:flex;justify-content:space-between;margin-top:70px;padding:0 40px}.signature-line{border-top:1px dotted #64748B;width:200px;text-align:center;padding-top:8px;font-weight:600}.final-note{text-align:center;margin-top:40px;font-size:13px;color:#64748B;padding:20px 30px;border-top:1px solid #e2e8f0}.final-note-bar{height:8px;background:linear-gradient(90deg,#4FD1C5,#4A90E2,#F472B6)}
             @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
             </style></head>
-                <body><div class="memo-container"><div class="memo-header"><div class="header-shape-left"></div><div class="header-shape-right"></div><div class="shop-info"><img src="https://i.ibb.co.com/B9LFnxY/20251109-143256.png" alt="Logo" class="shop-logo" crossorigin="anonymous"><h1 class="shop-name">আব্দুল্লাহ ইলেকট্রিক এন্ড ইলেকট্রনিক্স</h1><p class="shop-details">প্রোঃ মোঃ আব্দুল্লাহ মোল্লা</p><p class="shop-details">এখানে সকল প্রকার ইলেকট্রনিক ও ইলেকট্রনিক্স আইটেম সুলভ মূল্যে বিক্রয় এবং মেরামত করা হয়।</p><p class="shop-details">যোগাযোগ: ০১৩২৬-১৭০৭৭৭</p></div></div><div class="customer-info-section"><div class="info-field"><span>নামঃ</span><p>${customerName}</p></div><div class="info-field"><span>মেমো নং:</span><p>${memoNo}</p></div><div class="info-field full-width"><span>ঠিকানাঃ</span><p>${customerAddress}</p></div><div class="info-field"><span>তারিখঃ</span><p>${formattedTransactionDate}</p></div><div class="info-field"><span>ডেলিভারি তারিখঃ</span><p>${formattedDeliveryDate}</p></div></div><div class="memo-body"><table class="products-table"><thead><tr><th style="width:5%;text-align:center;">নং</th><th style="width:50%;">বিবরণ</th><th style="width:10%;text-align:center;">পরিমাণ</th><th style="width:15%;text-align:right;">দর</th><th style="width:20%;text-align:right;">টাকা</th></tr></thead><tbody>${tableRows}</tbody></table></div><div class="memo-footer"><div class="notes"><p><b>কথায়ঃ</b> ${amountInWords} টাকা মাত্র।</p></div><div class="totals-section"><table class="totals-table"><tbody><tr><td class="label">মোট</td><td class="value">${parseFloat(grandTotal).toFixed(2)}</td></tr><tr><td class="label">অগ্রিম</td><td class="value">${parseFloat(advance).toFixed(2)}</td></tr><tr class="due"><td class="label"><strong>বাকি</strong></td><td class="value"><strong>${parseFloat(due).toFixed(2)}</strong></td></tr></tbody></table></div></div><div class="signature-section"><div class="signature-line">ক্রেতার স্বাক্ষর</div><div class="signature-line">বিক্রেতার স্বাক্ষর</div></div><div class="final-note">বিক্রিত মাল ফেরত নেয়া হয় না। ধন্যবাদ।</div><div class="final-note-bar"></div></div></body></html>`;
+                <body><div class="memo-container"><div class="memo-header"><div class="header-shape-left"></div><div class="header-shape-right"></div><div class="shop-info"><img src="${staticShopInfo.logoUrl}" alt="Logo" class="shop-logo"><h1 class="shop-name">${staticShopInfo.name}</h1><p class="shop-details">${staticShopInfo.proprietor}</p><p class="shop-details">${staticShopInfo.details1}</p><p class="shop-details">${staticShopInfo.contact}</p></div></div><div class="customer-info-section"><div class="info-field"><span>নামঃ</span><p>${customerName}</p></div><div class="info-field"><span>মেমো নং:</span><p>${memoNo}</p></div><div class="info-field full-width"><span>ঠিকানাঃ</span><p>${customerAddress}</p></div><div class="info-field"><span>তারিখঃ</span><p>${formattedTransactionDate}</p></div><div class="info-field"><span>ডেলিভারি তারিখঃ</span><p>${formattedDeliveryDate}</p></div></div><div class="memo-body"><table class="products-table"><thead><tr><th style="width:5%;text-align:center;">নং</th><th style="width:50%;">বিবরণ</th><th style="width:10%;text-align:center;">পরিমাণ</th><th style="width:15%;text-align:right;">দর</th><th style="width:20%;text-align:right;">টাকা</th></tr></thead><tbody>${tableRows}</tbody></table> ${selectedShopHtml}</div><div class="memo-footer"><div class="notes"><p><b>কথায়ঃ</b> ${amountInWords} টাকা মাত্র।</p></div><div class="totals-section"><table class="totals-table"><tbody><tr><td class="label">মোট</td><td class="value">${parseFloat(grandTotal).toFixed(2)}</td></tr><tr><td class="label">অগ্রিম</td><td class="value">${parseFloat(advance).toFixed(2)}</td></tr><tr class="due"><td class="label"><strong>বাকি</strong></td><td class="value"><strong>${parseFloat(due).toFixed(2)}</strong></td></tr></tbody></table></div></div><div class="signature-section"><div class="signature-line">ক্রেতার স্বাক্ষর</div><div class="signature-line">বিক্রেতার স্বাক্ষর</div></div><div class="final-note">বিক্রিত মাল ফেরত নেয়া হয় না। ধন্যবাদ।</div><div class="final-note-bar"></div></div></body></html>`;
         }
-        
-        // **** MODIFIED: New function to print an element as an image ****
-        function printElementAsImage(element) {
-            html2canvas(element, { scale: 2, useCORS: true }).then(canvas => {
-                const imageData = canvas.toDataURL('image/png');
-                const printWindow = window.open('', '_blank');
-                printWindow.document.write(`
-                    <html>
-                        <head><title>Print Memo</title>
-                        <style>
-                            @media print { @page { size: auto; margin: 0; } body { margin: 0; } }
-                            body { margin: 0; padding: 0; }
-                            img { width: 100%; display: block; }
-                        </style>
-                        </head>
-                        <body><img src="${imageData}" /></body>
-                    </html>`);
-                printWindow.document.close();
-                printWindow.onload = function() {
-                    printWindow.focus();
-                    printWindow.print();
-                    setTimeout(() => { printWindow.close(); }, 500);
-                };
-            }).catch(err => {
-                console.error('Error generating image for printing:', err);
-                alert('প্রিন্ট করার জন্য ছবি তৈরি করা যায়নি।');
-            });
+
+
+        function executePrint(htmlContent) {
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
+            iframe.contentDocument.write(htmlContent);
+            iframe.contentDocument.close();
+            iframe.contentWindow.focus();
+            setTimeout(() => {
+                iframe.contentWindow.print();
+                document.body.removeChild(iframe);
+            }, 500);
         }
 
         function showMemoPreview(memoData) {
@@ -357,10 +2265,10 @@
             previewArea.innerHTML = memoContent;
             document.getElementById('viewMemoModal').style.display = 'block';
         }
-
-        async function viewMemoFromHistory(key) {
+        
+        async function viewMemoFromHistory(key, date) {
             try {
-                const snapshot = await database.ref('memos/'+key).once('value');
+                const snapshot = await database.ref('memos/' + date + '/' + key).once('value');
                 const memo = snapshot.val();
                 if (!memo) { alert('মেমোটি খুঁজে পাওয়া যায়নি।'); return; }
                 showMemoPreview(memo);
@@ -369,44 +2277,160 @@
                 alert('মেমোটি দেখানো যাচ্ছে না।');
             }
         }
-
-
-        // --- Modal Handling ---
-        const historyModal=document.getElementById("historyModal");
-        const showHistoryBtn=document.getElementById("show-history-btn");
-        const historyCloseBtn=historyModal.querySelector(".modal-close-btn");
-        const newMemoBtn = document.getElementById('new-memo-btn');
-
-        const viewModal = document.getElementById('viewMemoModal');
-        const viewModalCloseBtn = document.getElementById('view-modal-close-btn');
-        const printFromViewBtn = document.getElementById('print-from-view-btn');
-
-        function closeModal(modalId) { document.getElementById(modalId).style.display = "none"; }
         
-        showHistoryBtn.onclick=function(){ displayHistory(); historyModal.style.display="block"; closeNav()};
-        historyCloseBtn.onclick=function(){ closeModal('historyModal'); };
-        viewModalCloseBtn.onclick = function() { closeModal('viewMemoModal'); };
+        async function saveAndShowPreview(){
+            let success = false;
+            if(currentlyEditing){
+                success = await updateBillInHistory();
+            }else{
+                success = await saveBillToHistory();
+            }
+
+            if(success){
+                const currentMemoData = collectMemoData();
+                showMemoPreview(currentMemoData);
+                resetForm();
+            }
+        }
         
-        // **** MODIFIED: Print button now calls the new image printing function ****
-        printFromViewBtn.onclick = function() {
-            const elementToPrint = document.querySelector('#memo-preview-area .memo-container');
-            if (elementToPrint) {
-                printElementAsImage(elementToPrint);
-            } else {
-                console.error("Memo container not found for printing.");
-                alert("প্রিন্ট করার জন্য মেমো খুঁজে পাওয়া যায়নি।");
+        function resetEditingState(){
+            currentlyEditing=null;
+            const printSaveBtn = document.getElementById('print-save-btn');
+            if (printSaveBtn) printSaveBtn.innerText='সংরক্ষণ ও প্রিভিউ দেখুন 📄';
+        }
+        
+        function resetForm(){
+            const memoNo = document.getElementById('memo-no');
+            const customerName = document.getElementById('customer-name');
+            const customerAddress = document.getElementById('customer-address');
+            const transactionDate = document.getElementById('transaction-date');
+            const deliveryDate = document.getElementById('delivery-date');
+            const advance = document.getElementById('advance');
+            const tableBody = document.querySelector('#bill-table tbody');
+            
+            if (memoNo) memoNo.value='';
+            if (customerName) customerName.value='';
+            if (customerAddress) customerAddress.value='';
+            
+            const today=new Date().toISOString().split('T')[0];
+            if (transactionDate) transactionDate.value=today;
+            if (deliveryDate) deliveryDate.value=today;
+            
+            if (advance) advance.value=0;
+            if (tableBody) tableBody.innerHTML='';
+            
+            addRow();
+            calculateTotals();
+            resetEditingState();
+            closeNav();
+        }
+
+        // --- Event Listeners ---
+        document.addEventListener('DOMContentLoaded',()=>{
+            initializeCustomDropdowns();
+            fetchShops();
+            initSlider();
+            resetForm(); 
+            showHomeDashboard();
+            
+            const today = new Date().toISOString().split('T')[0];
+            const transactionDate = document.getElementById('transaction-date');
+            const deliveryDate = document.getElementById('delivery-date');
+            
+            if (transactionDate) transactionDate.value = today;
+            if (deliveryDate) deliveryDate.value = today;
+            
+            addRow();
+        });
+
+        // Navigation Event Listeners
+        const sideHomeBtn=document.getElementById('side-home-btn'),
+              sideNewMemoBtn=document.getElementById('side-new-memo-btn'),
+              sideShowHistoryBtn=document.getElementById('side-show-history-btn'),
+              sideShopBtn=document.getElementById('side-shop-btn'),
+              sidePrivacyBtn=document.getElementById('side-privacy-btn'),
+              bottomNavHome=document.getElementById('bottom-nav-home'),
+              bottomNavMemo=document.getElementById('bottom-nav-memo'),
+              bottomNavHistory=document.getElementById('bottom-nav-history'),
+              bottomNavShop=document.getElementById('bottom-nav-shop');
+
+        if (sideHomeBtn) sideHomeBtn.onclick=()=>{ showHomeDashboard(); closeNav(); };
+        if (sideNewMemoBtn) sideNewMemoBtn.onclick=()=>{ resetForm(); showMemoPage(); closeNav(); };
+        if (sideShowHistoryBtn) sideShowHistoryBtn.onclick=()=>{ showHistoryPage(false); closeNav(); };
+        if (sideShopBtn) sideShopBtn.onclick=()=>{ showShopPage(); closeNav(); };
+        if (sidePrivacyBtn) sidePrivacyBtn.onclick=()=>{ document.getElementById('privacyModal').style.display='block'; closeNav(); };
+        
+        if (bottomNavHome) bottomNavHome.onclick=(e)=>{ e.preventDefault(); showHomeDashboard(); };
+        if (bottomNavMemo) bottomNavMemo.onclick=(e)=>{ e.preventDefault(); resetForm(); showMemoPage(); };
+        if (bottomNavHistory) bottomNavHistory.onclick=(e)=>{ e.preventDefault(); showHistoryPage(true); };
+        if (bottomNavShop) bottomNavShop.onclick=(e)=>{ e.preventDefault(); showShopPage(); };
+        
+        if (fabAddMemo) fabAddMemo.onclick=()=>{ resetForm(); showMemoPage(); };
+
+        // Modal close buttons
+        const viewModalCloseBtn=document.getElementById('view-modal-close-btn'),
+              shopEditModalCloseBtn=document.getElementById('shop-edit-modal-close-btn'),
+              privacyModalCloseBtn=document.getElementById('privacy-modal-close-btn'),
+              saveShopInfoBtn=document.getElementById('save-shop-info-btn'),
+              printFromViewBtn=document.getElementById('print-from-view-btn');
+
+        if (viewModalCloseBtn) viewModalCloseBtn.onclick=()=> document.getElementById('viewMemoModal').style.display="none";
+        if (shopEditModalCloseBtn) shopEditModalCloseBtn.onclick=()=> document.getElementById('shopEditModal').style.display="none";
+        if (privacyModalCloseBtn) privacyModalCloseBtn.onclick=()=> document.getElementById('privacyModal').style.display="none";
+        
+        if(printFromViewBtn) {
+            printFromViewBtn.onclick = function() {
+                const contentToPrint = document.getElementById('memo-preview-area').innerHTML;
+                executePrint(contentToPrint);
             }
         }
 
-        window.onclick=function(event){
-            if(event.target == historyModal) { closeModal('historyModal'); }
-            if(event.target == viewModal) { closeModal('viewMemoModal'); }
-        };
-        newMemoBtn.onclick = resetForm;
+        if (saveShopInfoBtn) {
+            saveShopInfoBtn.onclick=()=>{
+                const newShopInfo={
+                    name: document.getElementById('shop-name-input').value,
+                    proprietor: document.getElementById('proprietor-name-input').value,
+                    details1: document.getElementById('shop-details1-input').value,
+                    contact: document.getElementById('shop-contact-input').value,
+                    logoUrl: document.getElementById('shop-logo-input').value
+                };
+                
+                const shopId = document.getElementById('save-shop-info-btn').getAttribute('data-shop-id');
+                
+                if (shopId) {
+                    database.ref('shops/' + shopId).update(newShopInfo)
+                        .then(() => {
+                            alert('দোকানের তথ্য সফলভাবে আপডেট করা হয়েছে!');
+                            document.getElementById('shopEditModal').style.display = 'none';
+                            loadShopList();
+                        })
+                        .catch(error => {
+                            console.error("Error updating shop:", error);
+                            alert('তথ্য আপডেট করা যায়নি। ত্রুটি: ' + error);
+                        });
+                } else {
+                    const newShopRef = database.ref('shops').push();
+                    newShopRef.set(newShopInfo)
+                        .then(() => {
+                            alert('নতুন দোকান সফলভাবে তৈরি করা হয়েছে!');
+                            selectedShopId = newShopRef.key;
+                            document.getElementById('shopEditModal').style.display = 'none';
+                            updateCustomDropdowns();
+                            loadShopList();
+                        })
+                        .catch(error => {
+                            console.error("Error creating shop:", error);
+                            alert('দোকান তৈরি করা যায়নি। ত্রুটি: ' + error);
+                        });
+                }
+            };
+        }
 
-        document.addEventListener('DOMContentLoaded', ()=>{
-            resetForm(); 
-        });
+        window.onclick=(event)=>{
+            if(event.target==document.getElementById('viewMemoModal')) document.getElementById('viewMemoModal').style.display="none";
+            if(event.target==document.getElementById('shopEditModal')) document.getElementById('shopEditModal').style.display="none";
+            if(event.target==document.getElementById('privacyModal')) document.getElementById('privacyModal').style.display="none";
+        };
     </script>
 </body>
 </html>
