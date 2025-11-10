@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Firebase SDK Scripts -->
+    <!-- আপনার নিজের Firebase প্রজেক্টের SDK এখানে যুক্ত করুন -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -949,9 +950,9 @@
             align-items: center;
             box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
             z-index: 999;
-            transition: transform 0.3s ease; /* নতুন পরিবর্তন */
+            transition: transform 0.3s ease;
         }
-        /* নতুন পরিবর্তন */
+        
         .bottom-nav.hidden {
             transform: translateY(100%);
         }
@@ -1280,6 +1281,7 @@
 
     <script>
         // --- Firebase Configuration ---
+        // !!! গুরুত্বপূর্ণ: আপনার নিজের Firebase প্রোজেক্টের কনফিগারেশন এখানে যুক্ত করুন
         const firebaseConfig = {
             apiKey: "AIzaSyAUjV_tUlWb5S7A8HSoTcU3vjvbuPzjtvI",
             authDomain: "app-1-e0ede.firebaseapp.com",
@@ -1304,18 +1306,18 @@
         // --- ন্যাভিগেশন বার অটো-হাইড ফাংশন ---
         let lastScrollTop = 0;
         const navbar = document.getElementById('navbar');
-        const bottomNav = document.querySelector('.bottom-nav'); // নতুন পরিবর্তন
-        const scrollThreshold = 100; // কত স্ক্রল করলে হাইড হবে
+        const bottomNav = document.querySelector('.bottom-nav');
+        const scrollThreshold = 100;
 
         function handleNavbarScroll() {
             const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
             
             if (scrollTop > lastScrollTop && scrollTop > scrollThreshold) {
                 navbar.classList.add('hidden');
-                if (bottomNav) bottomNav.classList.add('hidden'); // নতুন পরিবর্তন
+                if (bottomNav) bottomNav.classList.add('hidden');
             } else {
                 navbar.classList.remove('hidden');
-                if (bottomNav) bottomNav.classList.remove('hidden'); // নতুন পরিবর্তন
+                if (bottomNav) bottomNav.classList.remove('hidden');
             }
             
             lastScrollTop = scrollTop;
@@ -1338,22 +1340,22 @@
         function handleTouchScroll() {
             if (touchStartY - touchEndY > 50) { // Scrolling down
                 navbar.classList.add('hidden');
-                if (bottomNav) bottomNav.classList.add('hidden'); // নতুন পরিবর্তন
+                if (bottomNav) bottomNav.classList.add('hidden');
             } else if (touchEndY - touchStartY > 50) { // Scrolling up
                 navbar.classList.remove('hidden');
-                if (bottomNav) bottomNav.classList.remove('hidden'); // নতুন পরিবর্তন
+                if (bottomNav) bottomNav.classList.remove('hidden');
             }
         }
 
         window.addEventListener('load', () => {
             navbar.classList.remove('hidden');
-            if (bottomNav) bottomNav.classList.remove('hidden'); // নতুন পরিবর্তন
+            if (bottomNav) bottomNav.classList.remove('hidden');
         });
 
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden) {
                 navbar.classList.remove('hidden');
-                if (bottomNav) bottomNav.classList.remove('hidden'); // নতুন পরিবর্তন
+                if (bottomNav) bottomNav.classList.remove('hidden');
             }
         });
 
@@ -1420,7 +1422,6 @@
         // --- SIDENAV FUNCTIONS ---
         function openNav() {
             document.getElementById("mySidenav").style.width = "280px";
-            // navbar এখন আর ব্লার হবে না
             const contentToBlur = document.querySelectorAll('#main-content, #history-page, #shop-page, #home-page, .bottom-nav, .fab-add');
             contentToBlur.forEach(el => {
                 if (el) el.classList.add('content-blur');
@@ -1429,7 +1430,6 @@
 
         function closeNav() {
             document.getElementById("mySidenav").style.width = "0";
-            // navbar এখন আর ব্লার হবে না
             const contentToBlur = document.querySelectorAll('#main-content, #history-page, #shop-page, #home-page, .bottom-nav, .fab-add');
             contentToBlur.forEach(el => {
                 if (el) el.classList.remove('content-blur');
@@ -1611,38 +1611,19 @@
             shopsRef.on('value', (snapshot) => {
                 if (snapshot.exists()) {
                     shops = snapshot.val();
-                    updateCustomDropdowns();
-                    
-                    if (!selectedShopId && Object.keys(shops).length > 0) {
-                        selectedShopId = Object.keys(shops)[0];
-                        updateUIWithShopInfo();
-                    }
                 } else {
-                    createDefaultShop();
+                    shops = {}; // দোকান না থাকলে shops অবজেক্ট খালি করুন
                 }
+                updateCustomDropdowns();
+                
+                if (!selectedShopId && Object.keys(shops).length > 0) {
+                    selectedShopId = Object.keys(shops)[0];
+                }
+                updateUIWithShopInfo();
+
             }, (error) => {
                 console.error("Error fetching shops:", error);
             });
-        }
-
-        function createDefaultShop() {
-            const defaultShop = {
-                name: "অন্যান্য দোকান",
-                proprietor: "প্রোঃ",
-                details1: "বিবরণ এখানে লিখুন",
-                contact: "যোগাযোগঃ",
-                logoUrl: "https://i.ibb.co/fYwdd8h/IMG-20251107-WA0006.jpg"
-            };
-            
-            const newShopRef = database.ref('shops').push();
-            newShopRef.set(defaultShop)
-                .then(() => {
-                    selectedShopId = newShopRef.key;
-                    updateCustomDropdowns();
-                })
-                .catch(error => {
-                    console.error("Error creating default shop:", error);
-                });
         }
 
         function updateCustomDropdowns() {
@@ -1665,8 +1646,7 @@
             defaultOption.onclick = () => {
                 selectedShopId = null;
                 selectedText.textContent = 'দোকান নির্বাচন করুন...';
-                const shopDropdown = document.getElementById('shop-custom-dropdown');
-                if (shopDropdown) shopDropdown.classList.remove('selected');
+                document.getElementById('shop-custom-dropdown').classList.remove('selected');
                 updateUIWithShopInfo();
             };
             dropdownOptions.appendChild(defaultOption);
@@ -1685,15 +1665,15 @@
                 option.onclick = () => {
                     selectedShopId = shopId;
                     selectedText.textContent = shop.name;
-                    const shopDropdown = document.getElementById('shop-custom-dropdown');
-                    if (shopDropdown) shopDropdown.classList.remove('selected');
+                    document.getElementById('shop-custom-dropdown').classList.remove('selected');
                     updateUIWithShopInfo();
                 };
                 dropdownOptions.appendChild(option);
-                
-                if (selectedShopId === shopId) {
-                    selectedText.textContent = shop.name;
-                }
+            }
+             if (selectedShopId && shops[selectedShopId]) {
+                selectedText.textContent = shops[selectedShopId].name;
+            } else {
+                 selectedText.textContent = 'দোকান নির্বাচন করুন...';
             }
         }
 
@@ -1706,13 +1686,12 @@
             dropdownOptions.innerHTML = '';
             
             const allOption = document.createElement('div');
-            allOption.className = `custom-dropdown-option ${!selectedShopId ? 'selected' : ''}`;
+            allOption.className = `custom-dropdown-option`;
             allOption.innerHTML = `<div class="custom-dropdown-option-text"><div class="custom-dropdown-option-name">সকল দোকান</div></div>`;
             allOption.onclick = () => {
-                selectedShopId = null;
+                selectedShopId = null; // null করলে সকল দোকান বোঝাবে
                 selectedText.textContent = 'সকল দোকান';
-                const historyDropdown = document.getElementById('history-custom-dropdown');
-                if (historyDropdown) historyDropdown.classList.remove('selected');
+                document.getElementById('history-custom-dropdown').classList.remove('selected');
                 displayHistory();
             };
             dropdownOptions.appendChild(allOption);
@@ -1720,7 +1699,7 @@
             for (const shopId in shops) {
                 const shop = shops[shopId];
                 const option = document.createElement('div');
-                option.className = `custom-dropdown-option ${selectedShopId === shopId ? 'selected' : ''}`;
+                option.className = `custom-dropdown-option`;
                 option.innerHTML = `
                     <img src="${shop.logoUrl}" alt="${shop.name}" class="custom-dropdown-option-logo" onerror="this.src='https://i.ibb.co/fYwdd8h/IMG-20251107-WA0006.jpg'">
                     <div class="custom-dropdown-option-text">
@@ -1731,15 +1710,10 @@
                 option.onclick = () => {
                     selectedShopId = shopId;
                     selectedText.textContent = shop.name;
-                    const historyDropdown = document.getElementById('history-custom-dropdown');
-                    if (historyDropdown) historyDropdown.classList.remove('selected');
+                    document.getElementById('history-custom-dropdown').classList.remove('selected');
                     displayHistory();
                 };
                 dropdownOptions.appendChild(option);
-                
-                if (selectedShopId === shopId) {
-                    selectedText.textContent = shop.name;
-                }
             }
         }
 
@@ -1753,7 +1727,6 @@
                     headerLogo.src = shop.logoUrl;
                     headerTitle.innerText = shop.name;
                 } else {
-                    // যখন কোনো দোকান সিলেক্ট করা থাকবে না, ডিফল্ট দেখাবে
                     headerLogo.src = "https://i.ibb.co/fYwdd8h/IMG-20251107-WA0006.jpg";
                     headerTitle.innerText = "বিল ম্যানেজমেন্ট সিস্টেম";
                 }
@@ -1913,7 +1886,7 @@
                 const price = row.querySelector('.price');
                 const amount = row.querySelector('.amount');
                 
-                if (productName && quantity && price && amount) {
+                if (productName && quantity && price && amount && productName.value) { // Ensure product name is not empty
                     items.push({
                         name: productName.value,
                         quantity: quantity.value,
@@ -1923,25 +1896,16 @@
                 }
             });
             
-            const memoNo = document.getElementById('memo-no');
-            const customerName = document.getElementById('customer-name');
-            const customerAddress = document.getElementById('customer-address');
-            const transactionDate = document.getElementById('transaction-date');
-            const deliveryDate = document.getElementById('delivery-date');
-            const advance = document.getElementById('advance');
-            const grandTotal = document.getElementById('grand-total');
-            const due = document.getElementById('due');
-            
             return {
-                memoNo: memoNo ? memoNo.value : '',
-                customerName: customerName ? customerName.value : '',
-                customerAddress: customerAddress ? customerAddress.value : '',
-                transactionDate: transactionDate ? transactionDate.value : '',
-                deliveryDate: deliveryDate ? deliveryDate.value : '',
-                advance: advance ? advance.value : '0',
+                memoNo: document.getElementById('memo-no').value,
+                customerName: document.getElementById('customer-name').value,
+                customerAddress: document.getElementById('customer-address').value,
+                transactionDate: document.getElementById('transaction-date').value,
+                deliveryDate: document.getElementById('delivery-date').value,
+                advance: document.getElementById('advance').value || '0',
                 items: items,
-                grandTotal: grandTotal ? grandTotal.innerText : '0.00',
-                due: due ? due.innerText : '0.00',
+                grandTotal: document.getElementById('grand-total').innerText,
+                due: document.getElementById('due').innerText,
                 timestamp: Date.now(),
                 shopId: selectedShopId
             };
@@ -1950,24 +1914,25 @@
         async function saveBillToHistory(){
             const memo=collectMemoData();
             
-            if(!memo.customerName&&!memo.memoNo){
+            if(!memo.customerName && !memo.memoNo){
                 alert('অনুগ্রহ করে মেমো নং অথবা ক্রেতার নাম লিখুন।');
-                return;
+                return false;
             }
-            
-            const formattedDate=memo.transactionDate;
-            if(!formattedDate){
+            if(!memo.transactionDate){
                 alert('অনুগ্রহ করে লেনদেনের তারিখ নির্বাচন করুন।');
-                return;
+                return false;
             }
-            
             if(!memo.shopId){
                 alert('অনুগ্রহ করে একটি দোকান নির্বাচন করুন।');
-                return;
+                return false;
+            }
+            if (memo.items.length === 0) {
+                alert('অনুগ্রহ করে至少 একটি পণ্য যোগ করুন।');
+                return false;
             }
             
             try{
-                await database.ref('memos/'+formattedDate).push(memo);
+                await database.ref('memos/'+memo.transactionDate).push(memo);
                 return true; 
             }catch(error){
                 console.error("Firebase save error: ",error);
@@ -1977,25 +1942,23 @@
         }
         
         async function updateBillInHistory(){
-            if(!currentlyEditing) return;
+            if(!currentlyEditing) return false;
             
             const memo=collectMemoData();
-            const newDate=memo.transactionDate;
-            if(!newDate){
+            if(!memo.transactionDate){
                 alert('অনুগ্রহ করে লেনদেনের তারিখ নির্বাচন করুন।');
-                return;
+                return false;
             }
             
-            const oldDate=currentlyEditing.date;
-            const key=currentlyEditing.key;
+            const { key, date: oldDate } = currentlyEditing;
             
             try{
-                if(oldDate===newDate){
-                    await database.ref('memos/'+oldDate+'/'+key).update(memo);
+                if(oldDate === memo.transactionDate){
+                    await database.ref(`memos/${oldDate}/${key}`).update(memo);
                 }else{
-                    const updates={};
-                    updates['memos/'+oldDate+'/'+key]=null;
-                    updates['memos/'+newDate+'/'+key]=memo;
+                    const updates = {};
+                    updates[`memos/${oldDate}/${key}`] = null;
+                    updates[`memos/${memo.transactionDate}/${key}`] = memo;
                     await database.ref().update(updates);
                 }
                 return true;
@@ -2010,9 +1973,9 @@
         let selectedHistoryDate = null;
 
         function displayHistory(){
-            if(historyView==='dates'){
+            if(historyView === 'dates'){
                 displayDateList();
-            }else if(historyView==='memos'&&selectedHistoryDate){
+            }else if(historyView === 'memos' && selectedHistoryDate){
                 displayMemosForDate(selectedHistoryDate);
             }
         }
@@ -2040,44 +2003,51 @@
                     return;
                 }
                 
-                const dates=Object.keys(snapshot.val());
-                dates.reverse().forEach(date=>{
-                    const memosOnDate=snapshot.child(date).val();
-                    let memoCount=0;
-                    let dailyTotal=0;
-                    let dailyAdvance=0;
-                    
-                    for(const key in memosOnDate){
-                        const memo=memosOnDate[key];
-                        if(selectedShopId&&memo.shopId!==selectedShopId) continue;
+                let hasVisibleMemos = false;
+                const dates = Object.keys(snapshot.val());
+                dates.reverse().forEach(date => {
+                    const memosOnDate = snapshot.child(date).val();
+                    let memoCount = 0;
+                    let dailyTotal = 0;
+                    let dailyAdvance = 0;
+
+                    for (const key in memosOnDate) {
+                        const memo = memosOnDate[key];
+                        if (selectedShopId && memo.shopId !== selectedShopId) continue;
                         memoCount++;
-                        dailyTotal+=parseFloat(memo.grandTotal||0);
-                        dailyAdvance+=parseFloat(memo.advance||0);
+                        dailyTotal += parseFloat(memo.grandTotal || 0);
+                        dailyAdvance += parseFloat(memo.advance || 0);
                     }
-                    
-                    if(memoCount===0) return;
-                    
-                    const numFormatOptions={minimumFractionDigits:2,maximumFractionDigits:2};
-                    const formattedDate=new Date(date).toLocaleDateString('bn-BD',{year:'numeric',month:'long',day:'numeric'});
-                    const listItem=document.createElement('li');
-                    listItem.className='date-history-item';
-                    listItem.innerHTML=`
-                        <div class="date-primary-info">
-                            <div class="date-header">🗓️ ${formattedDate}</div>
-                            <div class="memo-count">📝 ${memoCount.toLocaleString('bn-BD')} টি মেমো</div>
-                        </div>
-                        <div class="date-totals-info">
-                            <div class="total-item"><span>মোট অর্ডার:</span><strong>৳ ${dailyTotal.toLocaleString('bn-BD',numFormatOptions)}</strong></div>
-                            <div class="total-item advance"><span>মোট অগ্রিম:</span><strong>৳ ${dailyAdvance.toLocaleString('bn-BD',numFormatOptions)}</strong></div>
-                        </div>
-                    `;
-                    listItem.onclick=()=>{
-                        historyView='memos';
-                        selectedHistoryDate=date;
-                        displayHistory();
-                    };
-                    historyList.appendChild(listItem);
+
+                    if (memoCount > 0) {
+                        hasVisibleMemos = true;
+                        const numFormatOptions = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
+                        const formattedDate = new Date(date).toLocaleDateString('bn-BD', { year: 'numeric', month: 'long', day: 'numeric' });
+                        const listItem = document.createElement('li');
+                        listItem.className = 'date-history-item';
+                        listItem.innerHTML = `
+                            <div class="date-primary-info">
+                                <div class="date-header">🗓️ ${formattedDate}</div>
+                                <div class="memo-count">📝 ${memoCount.toLocaleString('bn-BD')} টি মেমো</div>
+                            </div>
+                            <div class="date-totals-info">
+                                <div class="total-item"><span>মোট অর্ডার:</span><strong>৳ ${dailyTotal.toLocaleString('bn-BD', numFormatOptions)}</strong></div>
+                                <div class="total-item advance"><span>মোট অগ্রিম:</span><strong>৳ ${dailyAdvance.toLocaleString('bn-BD', numFormatOptions)}</strong></div>
+                            </div>
+                        `;
+                        listItem.onclick = () => {
+                            historyView = 'memos';
+                            selectedHistoryDate = date;
+                            displayHistory();
+                        };
+                        historyList.appendChild(listItem);
+                    }
                 });
+
+                if (!hasVisibleMemos) {
+                     historyList.innerHTML = `<div class="empty-state-container"><h2 class="empty-state-title">কোনো মেমো পাওয়া যায়নি</h2><p class="empty-state-subtitle">নির্বাচিত দোকানের জন্য কোনো মেমো নেই।</p></div>`;
+                }
+
             }, (error) => {
                 console.error("Error loading history:", error);
                 historyList.innerHTML=`<div class="empty-state-container"><h2 class="empty-state-title">ডেটা লোড করতে সমস্যা</h2><p class="empty-state-subtitle">দয়া করে আবার চেষ্টা করুন</p></div>`;
@@ -2109,6 +2079,11 @@
                     memos.push({ key:childSnapshot.key, ...memo });
                 });
                 
+                if (memos.length === 0) {
+                     historyList.innerHTML = `<div class="empty-state-container"><h2 class="empty-state-title">কোনো মেমো পাওয়া যায়নি</h2><p class="empty-state-subtitle">নির্বাচিত দোকানের জন্য এই তারিখে কোনো মেমো নেই।</p></div>`;
+                     return;
+                }
+
                 memos.reverse().forEach(memo=>{
                     const listItem=document.createElement('li');
                     listItem.className='memo-list-item';
@@ -2123,15 +2098,12 @@
                     historyList.appendChild(listItem);
                 });
                 
-                const backButton = document.getElementById('back-to-dates');
-                if (backButton) {
-                    backButton.onclick=(e)=>{
-                        e.preventDefault();
-                        historyView='dates';
-                        selectedHistoryDate=null;
-                        displayHistory();
-                    };
-                }
+                document.getElementById('back-to-dates').onclick=(e)=>{
+                    e.preventDefault();
+                    historyView='dates';
+                    selectedHistoryDate=null;
+                    displayHistory();
+                };
             }, (error) => {
                 console.error("Error loading memos for date:", error);
                 historyList.innerHTML='<li class="memo-list-item">ডেটা লোড করতে সমস্যা হয়েছে।</li>';
@@ -2191,9 +2163,9 @@
             }
         }
         
-        function numberToWordsBengali(num){const single=['','এক','দুই','তিন','চার','পাঁচ','ছয়','সাত','আট','নয়'],teens=['দশ','এগারো','বারো','তেরো','চোদ্দ','পনেরো','ষোল','সতেরো','আঠারো','উনিশ'],tens=['','','বিশ','ত্রিশ','চল্লিশ','পঞ্চাশ','ষাট','সত্তর','আশি','নব্বই'],powers=['',' হাজার',' লক্ষ',' কোটি'];function convert(n){if(n<10)return single[n];if(n<20)return teens[n-10];if(n<100)return tens[Math.floor(n/10)]+(n%10!==0?' '+single[n%10]:'');if(n<1000)return single[Math.floor(n/100)]+' শত'+(n%100!==0?' '+convert(n%100):'');return convert(Math.floor(n/1000))+' হাজার'+(n%1000!==0?' '+convert(n%1000):'')}if(num===0)return'শূন্য';let words='',i=0;while(num>0){let chunk=(i===0)?num%1000:num%100;if(chunk>0){words=convert(chunk)+powers[i]+' '+words}num=(i===0)?Math.floor(num/1000):Math.floor(num/100);i++}return words.trim()}
+        function numberToWordsBengali(num){const single=['','এক','দুই','তিন','চার','পাঁচ','ছয়','সাত','আট','নয়'],teens=['দশ','এগারো','বারো','তেরো','চোদ্দ','পনেরো','ষোল','সতেরো','আঠারো','উনিশ'],tens=['','','বিশ','ত্রিশ','চল্লিশ','পঞ্চাশ','ষাট','সত্তর','আশি','নব্বই'],powers=['',' হাজার',' লক্ষ',' কোটি'];function convert(n){if(n<10)return single[n];if(n<20)return teens[n-10];if(n<100)return tens[Math.floor(n/10)]+(n%10!==0?' '+single[n%10]:'');if(n<1000)return single[Math.floor(n/100)]+' শত'+(n%100!==0?' '+convert(n%100):'');return convert(Math.floor(n/1000))+' হাজার'+(n%1000!==0?' '+convert(n%1000):'')}if(num===0)return'শূন্য';let words='',i=0;num=Math.floor(num);while(num>0){let chunk=(i===0)?num%1000:num%100;if(chunk>0){let chunkWords=convert(chunk);if(i>0)chunkWords+=powers[i];words=chunkWords+' '+words}num=(i===0)?Math.floor(num/1000):Math.floor(num/100);i++}return words.trim()}
         
-        // --- পরিবর্তিত প্রিন্ট জেনারেট ফাংশন ---
+        // --- প্রিন্ট ফাংশন (সঠিকভাবে কনফিগার করা) ---
         function generatePrintContent(memoData) {
             const staticShopInfo = {
                 name: "আব্দুল্লাহ ইলেকট্রিক এন্ড ইলেকট্রনিক্স",
@@ -2208,14 +2180,14 @@
             const { memoNo, customerName, customerAddress, transactionDate, deliveryDate, items, grandTotal, advance, due } = memoData;
             const formattedTransactionDate = transactionDate ? new Date(transactionDate).toLocaleDateString('bn-BD') : 'N/A';
             const formattedDeliveryDate = deliveryDate ? new Date(deliveryDate).toLocaleDateString('bn-BD') : 'N/A';
-            const amountInWords = numberToWordsBengali(Math.round(grandTotal));
+            const amountInWords = numberToWordsBengali(parseFloat(grandTotal));
 
             let tableRows = '';
             items.forEach((item, index) => {
                 const pName = (item.name || '').replace(/\n/g, '<br>');
                 const qty = item.quantity || 1;
-                const price = (parseFloat(item.price || 0)).toFixed(2);
-                const amount = (parseFloat(item.amount || 0)).toFixed(2);
+                const price = (parseFloat(item.price || 0)).toLocaleString('bn-BD', {minimumFractionDigits: 2});
+                const amount = (parseFloat(item.amount || 0)).toLocaleString('bn-BD', {minimumFractionDigits: 2});
                 tableRows += `<tr><td style="text-align:center;">${index + 1}</td><td>${pName}</td><td style="text-align:center;">${qty}</td><td style="text-align:right;">${price}</td><td style="text-align:right;">${amount}</td></tr>`;
             });
 
@@ -2223,7 +2195,7 @@
             if (selectedShop) {
                 selectedShopHtml = `
                     <div class="selected-shop-info" style="margin-top: 30px; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px; background: #f8faff;">
-                        <h3 style="text-align: center; color: #0052D4; margin-top: 0; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px;">নির্বাচিত দোকান</h3>
+                        <h3 style="text-align: center; color: #0052D4; margin-top: 0; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px;">বিক্রয়কারী দোকান</h3>
                         <div style="display: flex; align-items: center; gap: 20px;">
                             <img src="${selectedShop.logoUrl}" alt="Shop Logo" style="height: 60px; border-radius: 8px;">
                             <div>
@@ -2242,9 +2214,8 @@
             .products-table th{background-color:#4A90E2;color:#fff;font-size:13px;text-transform:uppercase;font-weight:600;letter-spacing:.5px}.products-table td{border-right:1px solid #e2e8f0}.products-table th{border-right:1px solid #63a5e8}.products-table th:last-child,.products-table td:last-child{border-right:none}.products-table tbody tr:nth-child(even){background-color:#f8faff}.memo-footer{padding:25px 30px 30px;display:flex;justify-content:space-between;align-items:flex-start;background-color:#f8faff;border-top:1px solid #e2e8f0}.notes{width:55%}.notes p{font-size:13px;color:#64748B;margin-top:0}.notes b{color:#1E293B}.totals-section{width:35%}.totals-table{width:100%;border-collapse:collapse}.totals-table td{padding:10px;font-size:15px;border-bottom:1px solid #e2e8f0}.totals-table tr:last-child td{border-bottom:none}.totals-table .label{color:#64748B}.totals-table .value{text-align:right;font-weight:700;color:#1E293B}.totals-table tr:nth-child(1) .value{border-left:4px solid #334155;padding-right:10px}.totals-table tr:nth-child(2) .value{border-left:4px solid #F472B6;padding-right:10px}.totals-table tr.due .value{font-size:18px;color:#0052D4;background-color:#e9efff;border-left:4px solid #0052D4;padding-right:10px}.signature-section{display:flex;justify-content:space-between;margin-top:70px;padding:0 40px}.signature-line{border-top:1px dotted #64748B;width:200px;text-align:center;padding-top:8px;font-weight:600}.final-note{text-align:center;margin-top:40px;font-size:13px;color:#64748B;padding:20px 30px;border-top:1px solid #e2e8f0}.final-note-bar{height:8px;background:linear-gradient(90deg,#4FD1C5,#4A90E2,#F472B6)}
             @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
             </style></head>
-                <body><div class="memo-container"><div class="memo-header"><div class="header-shape-left"></div><div class="header-shape-right"></div><div class="shop-info"><img src="${staticShopInfo.logoUrl}" alt="Logo" class="shop-logo"><h1 class="shop-name">${staticShopInfo.name}</h1><p class="shop-details">${staticShopInfo.proprietor}</p><p class="shop-details">${staticShopInfo.details1}</p><p class="shop-details">${staticShopInfo.contact}</p></div></div><div class="customer-info-section"><div class="info-field"><span>নামঃ</span><p>${customerName}</p></div><div class="info-field"><span>মেমো নং:</span><p>${memoNo}</p></div><div class="info-field full-width"><span>ঠিকানাঃ</span><p>${customerAddress}</p></div><div class="info-field"><span>তারিখঃ</span><p>${formattedTransactionDate}</p></div><div class="info-field"><span>ডেলিভারি তারিখঃ</span><p>${formattedDeliveryDate}</p></div></div><div class="memo-body"><table class="products-table"><thead><tr><th style="width:5%;text-align:center;">নং</th><th style="width:50%;">বিবরণ</th><th style="width:10%;text-align:center;">পরিমাণ</th><th style="width:15%;text-align:right;">দর</th><th style="width:20%;text-align:right;">টাকা</th></tr></thead><tbody>${tableRows}</tbody></table> ${selectedShopHtml}</div><div class="memo-footer"><div class="notes"><p><b>কথায়ঃ</b> ${amountInWords} টাকা মাত্র।</p></div><div class="totals-section"><table class="totals-table"><tbody><tr><td class="label">মোট</td><td class="value">${parseFloat(grandTotal).toFixed(2)}</td></tr><tr><td class="label">অগ্রিম</td><td class="value">${parseFloat(advance).toFixed(2)}</td></tr><tr class="due"><td class="label"><strong>বাকি</strong></td><td class="value"><strong>${parseFloat(due).toFixed(2)}</strong></td></tr></tbody></table></div></div><div class="signature-section"><div class="signature-line">ক্রেতার স্বাক্ষর</div><div class="signature-line">বিক্রেতার স্বাক্ষর</div></div><div class="final-note">বিক্রিত মাল ফেরত নেয়া হয় না। ধন্যবাদ।</div><div class="final-note-bar"></div></div></body></html>`;
+                <body><div class="memo-container"><div class="memo-header"><div class="header-shape-left"></div><div class="header-shape-right"></div><div class="shop-info"><img src="${staticShopInfo.logoUrl}" alt="Logo" class="shop-logo"><h1 class="shop-name">${staticShopInfo.name}</h1><p class="shop-details">${staticShopInfo.proprietor}</p><p class="shop-details">${staticShopInfo.details1}</p><p class="shop-details">${staticShopInfo.contact}</p></div></div><div class="customer-info-section"><div class="info-field"><span>নামঃ</span><p>${customerName}</p></div><div class="info-field"><span>মেমো নং:</span><p>${memoNo}</p></div><div class="info-field full-width"><span>ঠিকানাঃ</span><p>${customerAddress}</p></div><div class="info-field"><span>তারিখঃ</span><p>${formattedTransactionDate}</p></div><div class="info-field"><span>ডেলিভারি তারিখঃ</span><p>${formattedDeliveryDate}</p></div></div><div class="memo-body"><table class="products-table"><thead><tr><th style="width:5%;text-align:center;">নং</th><th style="width:50%;">বিবরণ</th><th style="width:10%;text-align:center;">পরিমাণ</th><th style="width:15%;text-align:right;">দর</th><th style="width:20%;text-align:right;">টাকা</th></tr></thead><tbody>${tableRows}</tbody></table> ${selectedShopHtml}</div><div class="memo-footer"><div class="notes"><p><b>কথায়ঃ</b> ${amountInWords} টাকা মাত্র।</p></div><div class="totals-section"><table class="totals-table"><tbody><tr><td class="label">মোট</td><td class="value">${parseFloat(grandTotal).toLocaleString('bn-BD', {minimumFractionDigits: 2})}</td></tr><tr><td class="label">অগ্রিম</td><td class="value">${parseFloat(advance).toLocaleString('bn-BD', {minimumFractionDigits: 2})}</td></tr><tr class="due"><td class="label"><strong>বাকি</strong></td><td class="value"><strong>${parseFloat(due).toLocaleString('bn-BD', {minimumFractionDigits: 2})}</strong></td></tr></tbody></table></div></div><div class="signature-section"><div class="signature-line">ক্রেতার স্বাক্ষর</div><div class="signature-line">বিক্রেতার স্বাক্ষর</div></div><div class="final-note">বিক্রিত মাল ফেরত নেয়া হয় না। ধন্যবাদ।</div><div class="final-note-bar"></div></div></body></html>`;
         }
-
 
         function executePrint(htmlContent) {
             const iframe = document.createElement('iframe');
@@ -2261,8 +2232,7 @@
 
         function showMemoPreview(memoData) {
             const memoContent = generatePrintContent(memoData);
-            const previewArea = document.getElementById('memo-preview-area');
-            previewArea.innerHTML = memoContent;
+            document.getElementById('memo-preview-area').innerHTML = memoContent;
             document.getElementById('viewMemoModal').style.display = 'block';
         }
         
@@ -2295,29 +2265,19 @@
         
         function resetEditingState(){
             currentlyEditing=null;
-            const printSaveBtn = document.getElementById('print-save-btn');
-            if (printSaveBtn) printSaveBtn.innerText='সংরক্ষণ ও প্রিভিউ দেখুন 📄';
+            document.getElementById('print-save-btn').innerText='সংরক্ষণ ও প্রিভিউ দেখুন 📄';
         }
         
         function resetForm(){
-            const memoNo = document.getElementById('memo-no');
-            const customerName = document.getElementById('customer-name');
-            const customerAddress = document.getElementById('customer-address');
-            const transactionDate = document.getElementById('transaction-date');
-            const deliveryDate = document.getElementById('delivery-date');
-            const advance = document.getElementById('advance');
-            const tableBody = document.querySelector('#bill-table tbody');
+            document.getElementById('memo-no').value='';
+            document.getElementById('customer-name').value='';
+            document.getElementById('customer-address').value='';
+            document.getElementById('advance').value=0;
+            document.querySelector('#bill-table tbody').innerHTML='';
             
-            if (memoNo) memoNo.value='';
-            if (customerName) customerName.value='';
-            if (customerAddress) customerAddress.value='';
-            
-            const today=new Date().toISOString().split('T')[0];
-            if (transactionDate) transactionDate.value=today;
-            if (deliveryDate) deliveryDate.value=today;
-            
-            if (advance) advance.value=0;
-            if (tableBody) tableBody.innerHTML='';
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('transaction-date').value=today;
+            document.getElementById('delivery-date').value=today;
             
             addRow();
             calculateTotals();
@@ -2333,60 +2293,31 @@
             resetForm(); 
             showHomeDashboard();
             
-            const today = new Date().toISOString().split('T')[0];
-            const transactionDate = document.getElementById('transaction-date');
-            const deliveryDate = document.getElementById('delivery-date');
+            // Navigation Event Listeners
+            document.getElementById('side-home-btn').onclick=()=>{ showHomeDashboard(); closeNav(); };
+            document.getElementById('side-new-memo-btn').onclick=()=>{ resetForm(); showMemoPage(); closeNav(); };
+            document.getElementById('side-show-history-btn').onclick=()=>{ showHistoryPage(false); closeNav(); };
+            document.getElementById('side-shop-btn').onclick=()=>{ showShopPage(); closeNav(); };
+            document.getElementById('side-privacy-btn').onclick=()=>{ document.getElementById('privacyModal').style.display='block'; closeNav(); };
             
-            if (transactionDate) transactionDate.value = today;
-            if (deliveryDate) deliveryDate.value = today;
+            document.getElementById('bottom-nav-home').onclick=(e)=>{ e.preventDefault(); showHomeDashboard(); };
+            document.getElementById('bottom-nav-memo').onclick=(e)=>{ e.preventDefault(); showMemoPage(); };
+            document.getElementById('bottom-nav-history').onclick=(e)=>{ e.preventDefault(); showHistoryPage(true); };
+            document.getElementById('bottom-nav-shop').onclick=(e)=>{ e.preventDefault(); showShopPage(); };
             
-            addRow();
-        });
+            document.getElementById('fab-add-memo').onclick=()=>{ resetForm(); showMemoPage(); };
 
-        // Navigation Event Listeners
-        const sideHomeBtn=document.getElementById('side-home-btn'),
-              sideNewMemoBtn=document.getElementById('side-new-memo-btn'),
-              sideShowHistoryBtn=document.getElementById('side-show-history-btn'),
-              sideShopBtn=document.getElementById('side-shop-btn'),
-              sidePrivacyBtn=document.getElementById('side-privacy-btn'),
-              bottomNavHome=document.getElementById('bottom-nav-home'),
-              bottomNavMemo=document.getElementById('bottom-nav-memo'),
-              bottomNavHistory=document.getElementById('bottom-nav-history'),
-              bottomNavShop=document.getElementById('bottom-nav-shop');
-
-        if (sideHomeBtn) sideHomeBtn.onclick=()=>{ showHomeDashboard(); closeNav(); };
-        if (sideNewMemoBtn) sideNewMemoBtn.onclick=()=>{ resetForm(); showMemoPage(); closeNav(); };
-        if (sideShowHistoryBtn) sideShowHistoryBtn.onclick=()=>{ showHistoryPage(false); closeNav(); };
-        if (sideShopBtn) sideShopBtn.onclick=()=>{ showShopPage(); closeNav(); };
-        if (sidePrivacyBtn) sidePrivacyBtn.onclick=()=>{ document.getElementById('privacyModal').style.display='block'; closeNav(); };
-        
-        if (bottomNavHome) bottomNavHome.onclick=(e)=>{ e.preventDefault(); showHomeDashboard(); };
-        if (bottomNavMemo) bottomNavMemo.onclick=(e)=>{ e.preventDefault(); resetForm(); showMemoPage(); };
-        if (bottomNavHistory) bottomNavHistory.onclick=(e)=>{ e.preventDefault(); showHistoryPage(true); };
-        if (bottomNavShop) bottomNavShop.onclick=(e)=>{ e.preventDefault(); showShopPage(); };
-        
-        if (fabAddMemo) fabAddMemo.onclick=()=>{ resetForm(); showMemoPage(); };
-
-        // Modal close buttons
-        const viewModalCloseBtn=document.getElementById('view-modal-close-btn'),
-              shopEditModalCloseBtn=document.getElementById('shop-edit-modal-close-btn'),
-              privacyModalCloseBtn=document.getElementById('privacy-modal-close-btn'),
-              saveShopInfoBtn=document.getElementById('save-shop-info-btn'),
-              printFromViewBtn=document.getElementById('print-from-view-btn');
-
-        if (viewModalCloseBtn) viewModalCloseBtn.onclick=()=> document.getElementById('viewMemoModal').style.display="none";
-        if (shopEditModalCloseBtn) shopEditModalCloseBtn.onclick=()=> document.getElementById('shopEditModal').style.display="none";
-        if (privacyModalCloseBtn) privacyModalCloseBtn.onclick=()=> document.getElementById('privacyModal').style.display="none";
-        
-        if(printFromViewBtn) {
-            printFromViewBtn.onclick = function() {
+            // Modal close buttons
+            document.getElementById('view-modal-close-btn').onclick=()=> document.getElementById('viewMemoModal').style.display="none";
+            document.getElementById('shop-edit-modal-close-btn').onclick=()=> document.getElementById('shopEditModal').style.display="none";
+            document.getElementById('privacy-modal-close-btn').onclick=()=> document.getElementById('privacyModal').style.display="none";
+            
+            document.getElementById('print-from-view-btn').onclick = function() {
                 const contentToPrint = document.getElementById('memo-preview-area').innerHTML;
                 executePrint(contentToPrint);
             }
-        }
 
-        if (saveShopInfoBtn) {
-            saveShopInfoBtn.onclick=()=>{
+            document.getElementById('save-shop-info-btn').onclick=()=>{
                 const newShopInfo={
                     name: document.getElementById('shop-name-input').value,
                     proprietor: document.getElementById('proprietor-name-input').value,
@@ -2404,10 +2335,7 @@
                             document.getElementById('shopEditModal').style.display = 'none';
                             loadShopList();
                         })
-                        .catch(error => {
-                            console.error("Error updating shop:", error);
-                            alert('তথ্য আপডেট করা যায়নি। ত্রুটি: ' + error);
-                        });
+                        .catch(error => console.error("Error updating shop:", error));
                 } else {
                     const newShopRef = database.ref('shops').push();
                     newShopRef.set(newShopInfo)
@@ -2418,18 +2346,15 @@
                             updateCustomDropdowns();
                             loadShopList();
                         })
-                        .catch(error => {
-                            console.error("Error creating shop:", error);
-                            alert('দোকান তৈরি করা যায়নি। ত্রুটি: ' + error);
-                        });
+                        .catch(error => console.error("Error creating shop:", error));
                 }
             };
-        }
+        });
 
         window.onclick=(event)=>{
-            if(event.target==document.getElementById('viewMemoModal')) document.getElementById('viewMemoModal').style.display="none";
-            if(event.target==document.getElementById('shopEditModal')) document.getElementById('shopEditModal').style.display="none";
-            if(event.target==document.getElementById('privacyModal')) document.getElementById('privacyModal').style.display="none";
+            if(event.target.classList.contains('modal')) {
+                event.target.style.display = "none";
+            }
         };
     </script>
 </body>
