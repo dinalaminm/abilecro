@@ -1,3 +1,10 @@
+আপনার কোড পর্যালোচনা করে সমস্যাটি চিহ্নিত করেছি। সমস্যাটি হলো, যখন ব্রাউজারের নিজস্ব প্রিন্ট অপশন (যেমন Ctrl+P) ব্যবহার করা হয়, তখন এটি বর্তমানে দৃশ্যমান পুরো ওয়েবপেজটি প্রিন্ট করার চেষ্টা করে, যার মধ্যে অ্যাপের মেনু, বাটন এবং অন্যান্য অংশও অন্তর্ভুক্ত থাকে।
+
+এই সমস্যা সমাধানের জন্য, আমি আপনার HTML ফাইলের CSS অংশে `@media print` নামে একটি বিশেষ স্টাইল যুক্ত করেছি। এই স্টাইলের কাজ হলো, যখনই কোনো প্রিন্ট কমান্ড দেওয়া হবে, তখন এটি স্বয়ংক্রিয়ভাবে শুধুমাত্র মেমোর অংশটি ছাড়া বাকি সমস্ত অপ্রয়োজনীয় অংশ (যেমন: ন্যাভিগেশন বার, সাইড মেনু, বাটন ইত্যাদি) লুকিয়ে ফেলবে। এর ফলে, আপনি প্রিন্ট বাটনে ক্লিক করে প্রিন্ট করুন অথবা ব্রাউজারের নিজস্ব প্রিন্ট অপশন ব্যবহার করুন, উভয় ক্ষেত্রেই শুধুমাত্র মেমোটিই প্রিন্ট হবে।
+
+আপনার সুবিধার্থে আমি সম্পূর্ণ কোডটি আপডেট করে নিচে দিয়েছি। আপনি শুধু এই কোডটি ব্যবহার করলেই সমস্যার সমাধান হয়ে যাবে।
+
+```html
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -981,6 +988,47 @@
             font-weight: 600;
         }
         
+        /* --- [নতুন যোগ করা হয়েছে] প্রিন্ট করার জন্য বিশেষ স্টাইল --- */
+        @media print {
+            /* প্রিন্ট করার সময় অ্যাপের সকল অপ্রয়োজনীয় অংশ লুকিয়ে ফেলা হবে */
+            .navbar, .sidenav, .bottom-nav, .fab-add, #preview-page .header-bar {
+                display: none !important;
+            }
+
+            /* মূল কন্টেন্ট এরিয়াগুলোও প্রিন্ট থেকে বাদ দেওয়া হবে */
+            #main-content, #history-page, #shop-page, #home-page {
+                display: none !important;
+            }
+            
+            /* শুধুমাত্র প্রিভিউ পেজটি প্রিন্টে দেখানো হবে */
+            #preview-page {
+                display: block !important;
+                visibility: visible !important;
+            }
+
+            /* প্রিন্টের জন্য পুরো পৃষ্ঠা জুড়ে মেমোটি সেট করা হবে */
+            body, html {
+                margin: 0 !important;
+                padding: 0 !important;
+                background: #fff !important;
+            }
+            
+            #preview-page .container {
+                box-shadow: none !important;
+                border: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                max-width: 100% !important;
+                width: 100% !important;
+                border-radius: 0 !important;
+            }
+
+            /* মেমোর কন্টেন্ট যেন সঠিকভাবে প্রিন্ট হয় */
+            #memo-content-for-print {
+                border: none !important;
+                padding: 0 !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -2452,3 +2500,4 @@
     </script>
 </body>
 </html>
+``````
