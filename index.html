@@ -543,12 +543,36 @@
         .empty-state-subtitle { font-size: 16px; color: var(--text-light); }
         
         @media print {
+            body, html {
+                margin: 0 !important;
+                padding: 0 !important;
+                background: #fff !important;
+            }
             .navbar, .sidenav, .bottom-nav, .fab-add, .preview-actions { display: none !important; }
             #main-content, #history-page, #shop-page, #home-page { display: none !important; }
-            #preview-page { display: block !important; visibility: visible !important; }
-            body, html { margin: 0 !important; padding: 0 !important; background: #fff !important; }
-            #preview-page .container { box-shadow: none !important; border: none !important; margin: 0 !important; padding: 0 !important; max-width: 100% !important; width: 100% !important; border-radius: 0 !important; }
-            #memo-content-for-print { border: none !important; padding: 0 !important; }
+            
+            #preview-page {
+                display: block !important;
+                visibility: visible !important;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+            
+            #preview-page .container {
+                box-shadow: none !important;
+                border: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                max-width: 100% !important;
+                width: 100% !important;
+                border-radius: 0 !important;
+            }
+            #memo-content-for-print {
+                border: none !important;
+                padding: 0 !important;
+            }
         }
     </style>
 </head>
@@ -1376,85 +1400,91 @@
                 `;
             }
             
-            return `<html><head><title>Memo - ${customerName}</title><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"><style>
-            body{font-family:'Poppins',sans-serif;margin:0;padding:5px;background-color:#f9fafb;color:#1e293b;font-size:10px; min-width: 320px;}
-            .memo-container{max-width:400px;margin:5px auto;background:#fff;border-radius:8px;box-shadow:0 4px 15px rgba(0,0,0,.05);overflow:hidden;border:1px solid #e2e8f0}
-            .memo-header {
-                text-align: center; position: relative; overflow: hidden;
-                background: #fff; padding: 20px 15px 15px 15px;
-            }
-            .memo-header::before {
-                content: ''; position: absolute; top: 0; left: 0; right: 0; height: 100px; z-index: 0;
-                background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 500 100' preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M-5,35 C150,120 350,-30 505,50 L500,-5 L-5,-5 Z' style='stroke: none; fill: %23E9F2FF;'%3e%3c/path%3e%3cpath d='M-5,25 C100,70 200,20 300,40 C400,60 450,30 505,35 L500,-5 L-5,-5 Z' style='stroke: none; fill: %23D4E5FF; opacity: 0.8;'%3e%3c/path%3e%3cpath d='M30,80 a20,20 0 1,0 40,0 a20,20 0 1,0 -40,0' style='stroke: %23C0D8FF; stroke-width: 4; fill: none; opacity: 0.7;' /%3e %3ccircle cx='450' cy='40' r='12' style='fill: %23C0D8FF;' /%3e%3c/svg%3e");
-                background-repeat: no-repeat; background-size: cover; background-position: center top;
-            }
-            .header-content { position: relative; z-index: 1; }
-            .shop-logo {
-                height: 40px; border-radius: 8px; margin-bottom: 5px;
-                border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            }
-            .shop-name { font-size: 16px; font-weight: 700; color: #0052D4; margin: 0; }
-            .shop-details { font-size: 9px; color: #4A90E2; margin: 2px 0; }
-            .customer-info-section{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:10px;border-bottom:1px solid #e2e8f0}
-            .info-field{display:flex;align-items:stretch;border-radius:4px;overflow:hidden;border:1px solid #e2e8f0;background:#f8faff}
-            .info-field span{font-weight:600;padding:4px 6px;color:white;background-color:#4A90E2;display:flex;align-items:center;white-space:nowrap}
-            .info-field p{margin:0;padding:4px 6px;width:100%; word-break: break-word;}
-            .info-field.full-width{grid-column:1/-1}
-            .memo-body{padding:10px}
-            .products-table{width:100%;border-collapse:collapse;border-radius:6px;overflow:hidden; table-layout: fixed;}
+            // এই HTML টি সরাসরি প্রিন্ট প্রিভিউতে দেখানো হবে
+            return `<div class="memo-container"><div class="memo-header"><div class="header-content"><img src="${staticShopInfo.logoUrl}" alt="Logo" class="shop-logo"><h1 class="shop-name">${staticShopInfo.name}</h1><p class="shop-details">${staticShopInfo.proprietor}</p><p class="shop-details">${staticShopInfo.details1}</p><p class="shop-details">${staticShopInfo.contact}</p></div></div><div class="customer-info-section"><div class="info-field"><span>নামঃ</span><p>${customerName}</p></div><div class="info-field"><span>মেমো নং:</span><p>${memoNo}</p></div><div class="info-field full-width"><span>ঠিকানাঃ</span><p>${customerAddress}</p></div><div class="info-field"><span>তারিখঃ</span><p>${formattedTransactionDate}</p></div><div class="info-field"><span>ডেলিভারি তারিখঃ</span><p>${formattedDeliveryDate}</p></div></div><div class="memo-body"><table class="products-table"><thead><tr><th style="width:8%;text-align:center;">নং</th><th style="width:42%;">বিবরণ</th><th style="width:15%;text-align:right;">পরিমাণ</th><th style="width:15%;text-align:right;">দর</th><th style="width:20%;text-align:right;">টাকা</th></tr></thead><tbody>${tableRows}</tbody></table> ${selectedShopHtml}</div><div class="memo-footer"><div class="notes"><p><b>কথায়ঃ</b> ${amountInWords} টাকা মাত্র।</p></div><div class="totals-section"><table class="totals-table"><tbody><tr><td class="label">মোট</td><td class="value">${parseFloat(grandTotal).toFixed(2)}</td></tr><tr><td class="label">অগ্রিম</td><td class="value">${parseFloat(advance).toFixed(2)}</td></tr><tr class="due"><td class="label"><strong>বাকি</strong></td><td class="value"><strong>${parseFloat(due).toFixed(2)}</strong></td></tr></tbody></table></div></div><div class="signature-section"><div class="signature-line">ক্রেতার স্বাক্ষর</div><div class="signature-line">বিক্রেতার স্বাক্ষর</div></div><div class="final-note">বিক্রিত মাল ফেরত নেয়া হয় না। ধন্যবাদ।</div></div>
             
-            .products-table th, .products-table td {
-                padding:5px 6px; text-align:left; border:1px solid #e2e8f0;
-                word-wrap:break-word; overflow-wrap: break-word; vertical-align: middle; white-space: nowrap;
-            }
-            .products-table th:nth-child(2), .products-table td:nth-child(2) {
-                white-space: normal;
-            }
-            .products-table th {
-                background-color:#4A90E2; color:#fff; font-size:10px;
-                text-transform:uppercase; font-weight:600;
-            }
+            <style>
+                body{font-family:'Poppins',sans-serif;margin:0;padding:5px;background-color:#f9fafb;color:#1e293b;font-size:10px; min-width: 320px;}
+                .memo-container{max-width:400px;margin:5px auto;background:#fff;border-radius:8px;box-shadow:0 4px 15px rgba(0,0,0,.05);overflow:hidden;border:1px solid #e2e8f0}
+                .memo-header {
+                    text-align: center; position: relative; overflow: hidden;
+                    background: #fff; padding: 20px 15px 15px 15px;
+                }
+                .memo-header::before {
+                    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 100px; z-index: 0;
+                    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 500 100' preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M-5,35 C150,120 350,-30 505,50 L500,-5 L-5,-5 Z' style='stroke: none; fill: %23E9F2FF;'%3e%3c/path%3e%3cpath d='M-5,25 C100,70 200,20 300,40 C400,60 450,30 505,35 L500,-5 L-5,-5 Z' style='stroke: none; fill: %23D4E5FF; opacity: 0.8;'%3e%3c/path%3e%3cpath d='M30,80 a20,20 0 1,0 40,0 a20,20 0 1,0 -40,0' style='stroke: %23C0D8FF; stroke-width: 4; fill: none; opacity: 0.7;' /%3e %3ccircle cx='450' cy='40' r='12' style='fill: %23C0D8FF;' /%3e%3c/svg%3e");
+                    background-repeat: no-repeat; background-size: cover; background-position: center top;
+                }
+                .header-content { position: relative; z-index: 1; }
+                .shop-logo {
+                    height: 40px; border-radius: 8px; margin-bottom: 5px;
+                    border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                }
+                .shop-name { font-size: 16px; font-weight: 700; color: #0052D4; margin: 0; }
+                .shop-details { font-size: 9px; color: #4A90E2; margin: 2px 0; }
+                .customer-info-section{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:10px;border-bottom:1px solid #e2e8f0}
+                .info-field{display:flex;align-items:stretch;border-radius:4px;overflow:hidden;border:1px solid #e2e8f0;background:#f8faff}
+                .info-field span{font-weight:600;padding:4px 6px;color:white;background-color:#4A90E2;display:flex;align-items:center;white-space:nowrap}
+                .info-field p{margin:0;padding:4px 6px;width:100%; word-break: break-word;}
+                .info-field.full-width{grid-column:1/-1}
+                .memo-body{padding:10px}
+                .products-table{width:100%;border-collapse:collapse;border-radius:6px;overflow:hidden; table-layout: fixed;}
+                
+                .products-table th, .products-table td {
+                    padding:5px 6px; text-align:left; border:1px solid #e2e8f0;
+                    word-wrap:break-word; overflow-wrap: break-word; vertical-align: middle; white-space: nowrap;
+                }
+                .products-table th:nth-child(2), .products-table td:nth-child(2) {
+                    white-space: normal;
+                }
+                .products-table th {
+                    background-color:#4A90E2; color:#fff; font-size:10px;
+                    text-transform:uppercase; font-weight:600;
+                }
 
-            .products-table tbody tr:nth-child(even){background-color:#f8faff}
-            .memo-footer{padding:10px;display:flex;justify-content:space-between;align-items:flex-start;background-color:#f8faff;border-top:1px solid #e2e8f0}
-            .notes{width:60%}.notes p{font-size:9px;color:#64748B;margin-top:0}.notes b{color:#1E293B}
-            .totals-section{width:38%}
-            .totals-table{width:100%;border-collapse:collapse}
-            .totals-table td{padding:4px;font-size:10px;border-bottom:1px solid #e2e8f0}
-            .totals-table tr:last-child td{border-bottom:none}
-            .totals-table .label{color:#64748B}
-            .totals-table .value{text-align:right;font-weight:700;color:#1E293B}
-            .totals-table tr.due .value{font-size:12px;color:#0052D4;}
-            .signature-section{display:flex;justify-content:space-between;margin-top:20px;padding:0 15px}
-            .signature-line{border-top:1px dotted #64748B;width:120px;text-align:center;padding-top:4px;font-size:10px;font-weight:600}
-            .final-note{text-align:center;margin-top:15px;font-size:9px;color:#64748B;padding:10px;border-top:1px solid #e2e8f0}
-            @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
-            </style></head>
-                <body><div class="memo-container"><div class="memo-header"><div class="header-content"><img src="${staticShopInfo.logoUrl}" alt="Logo" class="shop-logo"><h1 class="shop-name">${staticShopInfo.name}</h1><p class="shop-details">${staticShopInfo.proprietor}</p><p class="shop-details">${staticShopInfo.details1}</p><p class="shop-details">${staticShopInfo.contact}</p></div></div><div class="customer-info-section"><div class="info-field"><span>নামঃ</span><p>${customerName}</p></div><div class="info-field"><span>মেমো নং:</span><p>${memoNo}</p></div><div class="info-field full-width"><span>ঠিকানাঃ</span><p>${customerAddress}</p></div><div class="info-field"><span>তারিখঃ</span><p>${formattedTransactionDate}</p></div><div class="info-field"><span>ডেলিভারি তারিখঃ</span><p>${formattedDeliveryDate}</p></div></div><div class="memo-body"><table class="products-table"><thead><tr><th style="width:8%;text-align:center;">নং</th><th style="width:42%;">বিবরণ</th><th style="width:15%;text-align:right;">পরিমাণ</th><th style="width:15%;text-align:right;">দর</th><th style="width:20%;text-align:right;">টাকা</th></tr></thead><tbody>${tableRows}</tbody></table> ${selectedShopHtml}</div><div class="memo-footer"><div class="notes"><p><b>কথায়ঃ</b> ${amountInWords} টাকা মাত্র।</p></div><div class="totals-section"><table class="totals-table"><tbody><tr><td class="label">মোট</td><td class="value">${parseFloat(grandTotal).toFixed(2)}</td></tr><tr><td class="label">অগ্রিম</td><td class="value">${parseFloat(advance).toFixed(2)}</td></tr><tr class="due"><td class="label"><strong>বাকি</strong></td><td class="value"><strong>${parseFloat(due).toFixed(2)}</strong></td></tr></tbody></table></div></div><div class="signature-section"><div class="signature-line">ক্রেতার স্বাক্ষর</div><div class="signature-line">বিক্রেতার স্বাক্ষর</div></div><div class="final-note">বিক্রিত মাল ফেরত নেয়া হয় না। ধন্যবাদ।</div></div></body></html>`;
-        }
-
-
-        function executePrint(html) {
-            const iframe = document.createElement('iframe');
-            iframe.style.display = 'none'; document.body.appendChild(iframe);
-            iframe.contentDocument.write(html); iframe.contentDocument.close();
-            iframe.contentWindow.focus();
-            setTimeout(() => { iframe.contentWindow.print(); document.body.removeChild(iframe); }, 500);
+                .products-table tbody tr:nth-child(even){background-color:#f8faff}
+                .memo-footer{padding:10px;display:flex;justify-content:space-between;align-items:flex-start;background-color:#f8faff;border-top:1px solid #e2e8f0}
+                .notes{width:60%}.notes p{font-size:9px;color:#64748B;margin-top:0}.notes b{color:#1E293B}
+                .totals-section{width:38%}
+                .totals-table{width:100%;border-collapse:collapse}
+                .totals-table td{padding:4px;font-size:10px;border-bottom:1px solid #e2e8f0}
+                .totals-table tr:last-child td{border-bottom:none}
+                .totals-table .label{color:#64748B}
+                .totals-table .value{text-align:right;font-weight:700;color:#1E293B}
+                .totals-table tr.due .value{font-size:12px;color:#0052D4;}
+                .signature-section{display:flex;justify-content:space-between;margin-top:20px;padding:0 15px}
+                .signature-line{border-top:1px dotted #64748B;width:120px;text-align:center;padding-top:4px;font-size:10px;font-weight:600}
+                .final-note{text-align:center;margin-top:15px;font-size:9px;color:#64748B;padding:10px;border-top:1px solid #e2e8f0}
+                @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+            </style>`;
         }
 
         function showMemoPreview(memoData, backPage) {
             const content = generatePrintContent(memoData);
             previewPage.innerHTML = `<div class="container"><div class="glass-card"><div class="preview-actions" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;"><button class="btn" id="preview-back-btn" style="background: #f0f8ff; color: #007BFF;">&larr; ফিরে যান</button><button class="btn btn-add" id="preview-print-btn">প্রিন্ট 🖨️</button></div><div id="memo-content-for-print">${content}</div></div></div>`;
             
-            homePage.style.display = 'none'; mainContent.style.display = 'none'; historyPage.style.display = 'none'; shopPage.style.display = 'none';
-            previewPage.style.display = 'block'; window.scrollTo(0,0);
+            homePage.style.display = 'none';
+            mainContent.style.display = 'none';
+            historyPage.style.display = 'none';
+            shopPage.style.display = 'none';
+            previewPage.style.display = 'block';
+            window.scrollTo(0, 0);
 
-            document.getElementById('preview-print-btn').onclick = () => executePrint(document.getElementById('memo-content-for-print').innerHTML);
+            // এখানে পরিবর্তন করা হয়েছে
+            document.getElementById('preview-print-btn').onclick = () => {
+                window.print();
+            };
+
             document.getElementById('preview-back-btn').onclick = () => {
-                if (backPage === 'history') showHistoryPage(true);
-                else { resetForm(); showMemoPage(); }
+                if (backPage === 'history') {
+                    showHistoryPage(true);
+                } else {
+                    resetForm();
+                    showMemoPage();
+                }
             };
         }
+
         
         async function viewMemoFromHistory(key, date) {
             if (!currentUserId) return;
