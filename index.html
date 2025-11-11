@@ -360,21 +360,21 @@
         table{ width:100%; border-collapse:collapse; }
         th,td{ padding:14px 10px; text-align:center; border-bottom:1px solid var(--border-color); vertical-align:middle; }
         
-        #bill-table th:nth-child(1), #bill-table td:nth-child(1) { width: 5%; } /* নং */
-        #bill-table th:nth-child(2), #bill-table td:nth-child(2) { width: 40%; text-align: left; min-width: 200px; } /* বিবরণ */
-        #bill-table th:nth-child(3), #bill-table td:nth-child(3) { width: 15%; text-align: right; } /* পরিমাণ */
-        #bill-table th:nth-child(4), #bill-table td:nth-child(4) { width: 15%; text-align: right; } /* দর */
-        #bill-table th:nth-child(5), #bill-table td:nth-child(5) { width: 20%; text-align: right; } /* টাকা */
-        #bill-table th:nth-child(6), #bill-table td:nth-child(6) { width: 5%; } /* মুছুন */
+        #bill-table th:nth-child(1), #bill-table td:nth-child(1) { width: 5%; }
+        #bill-table th:nth-child(2), #bill-table td:nth-child(2) { width: 40%; text-align: left; min-width: 200px; }
+        #bill-table th:nth-child(3), #bill-table td:nth-child(3) { width: 15%; text-align: right; }
+        #bill-table th:nth-child(4), #bill-table td:nth-child(4) { width: 15%; text-align: right; }
+        #bill-table th:nth-child(5), #bill-table td:nth-child(5) { width: 20%; text-align: right; }
+        #bill-table th:nth-child(6), #bill-table td:nth-child(6) { width: 5%; }
 
-        th{ 
+        th { 
             background-color: rgba(0, 123, 255, 0.1);
             color: var(--text-dark); 
             font-weight:600; 
             font-size:14px; 
             letter-spacing:.5px; 
             text-transform:uppercase; 
-            border-bottom-width: 2px; 
+            border-bottom: 2px solid rgba(0, 123, 255, 0.2);
         }
         tr:last-child td{ border-bottom:none }
         
@@ -396,7 +396,7 @@
             padding: 8px 5px;
         }
         td input.product-name {
-             width: auto;
+            width: auto;
             min-width: 15ch;
         }
         #bill-table td.amount {
@@ -541,8 +541,9 @@
         .empty-state-container { padding: 80px 20px; text-align: center; }
         .empty-state-title { font-size: 22px; font-weight: 600; }
         .empty-state-subtitle { font-size: 16px; color: var(--text-light); }
-         @media print {
-            .navbar, .sidenav, .bottom-nav, .fab-add, #preview-page .header-bar { display: none !important; }
+        
+        @media print {
+            .navbar, .sidenav, .bottom-nav, .fab-add, .preview-actions { display: none !important; }
             #main-content, #history-page, #shop-page, #home-page { display: none !important; }
             #preview-page { display: block !important; visibility: visible !important; }
             body, html { margin: 0 !important; padding: 0 !important; background: #fff !important; }
@@ -1443,7 +1444,7 @@
 
         function showMemoPreview(memoData, backPage) {
             const content = generatePrintContent(memoData);
-            previewPage.innerHTML = `<div class="container"><div class="glass-card"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;"><button class="btn" id="preview-back-btn" style="background: #f0f8ff; color: #007BFF;">&larr; ফিরে যান</button><button class="btn btn-add" id="preview-print-btn">প্রিন্ট 🖨️</button></div><div id="memo-content-for-print">${content}</div></div></div>`;
+            previewPage.innerHTML = `<div class="container"><div class="glass-card"><div class="preview-actions" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;"><button class="btn" id="preview-back-btn" style="background: #f0f8ff; color: #007BFF;">&larr; ফিরে যান</button><button class="btn btn-add" id="preview-print-btn">প্রিন্ট 🖨️</button></div><div id="memo-content-for-print">${content}</div></div></div>`;
             
             homePage.style.display = 'none'; mainContent.style.display = 'none'; historyPage.style.display = 'none'; shopPage.style.display = 'none';
             previewPage.style.display = 'block'; window.scrollTo(0,0);
