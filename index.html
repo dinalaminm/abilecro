@@ -63,9 +63,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             padding: 20px;
-            padding-top: 0;
+            z-index: 9999;
         }
         .auth-container {
             width: 100%;
@@ -534,6 +538,9 @@
             display:flex; justify-content:space-between; align-items:center;
             border-bottom: 1px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 15px;
         }
+        .modal-body p, .modal-body h3 {
+             margin-bottom: 10px;
+        }
         .modal-close-btn{ font-size:28px; font-weight:bold; cursor:pointer; }
         .shop-edit-form label {
             display: block; margin-top: 15px; margin-bottom: 5px; font-weight: 500;
@@ -648,6 +655,7 @@
             <a href="#" id="side-show-history-btn"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg><span>মেমোর ইতিহাস</span></a>
             <hr class="sidenav-divider">
             <a href="#" id="side-shop-btn"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg><span>আমাদের দোকান</span></a>
+            <a href="#" id="side-about-btn"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg><span>আমাদের সম্পর্কে</span></a>
             <a href="#" id="side-privacy-btn"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg><span>গোপনীয়তা নীতি</span></a>
             <a href="#" id="side-logout-btn"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg><span>লগআউট</span></a>
             <div class="sidenav-footer">সংস্করণ ১.১৮</div>
@@ -769,7 +777,7 @@
         <div class="bottom-nav">
             <a href="#" class="nav-item active" id="bottom-nav-home"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span>হোম</span></a>
             <a href="#" class="nav-item" id="bottom-nav-memo"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg><span>মেমো</span></a>
-            <a href="#" class="nav-item" id="bottom-nav-history"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg><span>লিস্ট</span></a>
+            <a href="#" class="nav-item" id="bottom-nav-history"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg><span>তালিকা</span></a>
             <a href="#" class="nav-item" id="bottom-nav-shop"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg><span>দোকান</span></a>
         </div>
     </div>
@@ -802,7 +810,7 @@
     <div id="privacyModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>গোপনীয়তা নীতি (Privacy Policy)</h2>
+                <h2>গোপনীয়তা নীতি</h2>
                 <span class="modal-close-btn" id="privacy-modal-close-btn">&times;</span>
             </div>
             <div class="modal-body">
@@ -811,6 +819,24 @@
                 <p>এই অ্যাপটি আপনার অ্যাকাউন্টের অধীনে শুধুমাত্র আপনার তৈরি করা বিলের তথ্য সংরক্ষণ করে।</p>
                 <h3>কীভাবে তথ্য ব্যবহার করা হয়?</h3>
                 <p>আপনার সংরক্ষিত বিলের তথ্য শুধুমাত্র আপনার ব্যবসায়িক হিসাব ব্যবস্থাপনার জন্য ব্যবহার করা হয়। এই তথ্য অন্য কোনো ব্যক্তি বা প্রতিষ্ঠানের সাথে শেয়ার করা হয় না।</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="aboutModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>আমাদের সম্পর্কে</h2>
+                <span class="modal-close-btn" id="about-modal-close-btn">&times;</span>
+            </div>
+            <div class="modal-body" style="text-align: center; line-height: 1.8;">
+                 <img src="https://i.ibb.co.com/B9LFnxY/20251109-143256.png" alt="লোগো" style="height: 60px; border-radius: 12px; margin-bottom: 15px;">
+                <p><strong>আব্দুল্লাহ ইলেকট্রিক বিল ম্যানেজমেন্ট</strong> অ্যাপটি দোকানের দৈনিক বিল এবং মেমো সহজে ও নিরাপদে পরিচালনা করার জন্য তৈরি করা হয়েছে।</p>
+                <p>এই অ্যাপের মাধ্যমে আপনি সহজেই নতুন বিল তৈরি, সংরক্ষণ এবং পুরোনো বিলের হিসাব দেখতে পারবেন।</p>
+                <p style="margin-top: 20px; font-size: 14px; color: var(--text-light);">
+                    সংস্করণ: ১.১৯ <br>
+                    প্রস্তুতকারক: মোঃ দিন আলামিন 
+                </p>
             </div>
         </div>
     </div>
@@ -880,12 +906,16 @@
                 currentUserId = user.uid;
                 authPage.style.display = 'none';
                 document.body.style.paddingTop = '80px';
+                document.body.style.paddingBottom = '95px';
+                document.body.style.overflow = 'auto';
                 mainAppContainer.style.display = 'block';
                 initializeApp();
             } else {
                 currentUserId = null;
                 authPage.style.display = 'flex';
                 document.body.style.paddingTop = '0';
+                document.body.style.paddingBottom = '0';
+                document.body.style.overflow = 'hidden';
                 mainAppContainer.style.display = 'none';
             }
         });
@@ -1520,10 +1550,12 @@
         ['side-show-history-btn', 'bottom-nav-history'].forEach(id => document.getElementById(id).onclick = (e) => { e.preventDefault(); showHistoryPage(true); closeNav(); });
         ['side-shop-btn', 'bottom-nav-shop'].forEach(id => document.getElementById(id).onclick = (e) => { e.preventDefault(); showShopPage(); closeNav(); });
         document.getElementById('side-privacy-btn').onclick = () => { document.getElementById('privacyModal').style.display = 'block'; closeNav(); };
+        document.getElementById('side-about-btn').onclick = () => { document.getElementById('aboutModal').style.display = 'block'; closeNav(); };
         document.getElementById('side-logout-btn').onclick = () => { handleSignOut(); closeNav(); };
         
         document.getElementById('shop-edit-modal-close-btn').onclick = () => document.getElementById('shopEditModal').style.display = "none";
         document.getElementById('privacy-modal-close-btn').onclick = () => document.getElementById('privacyModal').style.display = "none";
+        document.getElementById('about-modal-close-btn').onclick = () => document.getElementById('aboutModal').style.display = "none";
         
         document.getElementById('save-shop-info-btn').onclick = () => {
             if (!currentUserId) return;
@@ -1541,6 +1573,7 @@
         window.onclick = (event) => {
             if (event.target == document.getElementById('shopEditModal')) document.getElementById('shopEditModal').style.display = "none";
             if (event.target == document.getElementById('privacyModal')) document.getElementById('privacyModal').style.display = "none";
+            if (event.target == document.getElementById('aboutModal')) document.getElementById('aboutModal').style.display = "none";
         };
     </script>
 </body>
