@@ -1091,17 +1091,16 @@
             });
         }
         
+        /**
+         * এই ফাংশনটি ইচ্ছাকৃতভাবে খালি রাখা হয়েছে।
+         * ব্যবহারকারীর অনুরোধ অনুযায়ী, অ্যাপের প্রধান শিরোনাম এবং লোগো সব সময় স্থির থাকবে,
+         * নির্বাচিত দোকানের উপর ভিত্তি করে পরিবর্তন হবে না।
+         * HTML এ স্থায়ীভাবে লোগো এবং নাম সেট করা আছে।
+         */
         function updateUIWithShopInfo() {
-            const navLogo = document.getElementById('nav-logo');
-            const navTitle = document.getElementById('nav-title');
-            if (selectedShopId && shops[selectedShopId]) {
-                const shop = shops[selectedShopId];
-                navLogo.src = shop.logoUrl;
-                navTitle.innerText = shop.name;
-            } else {
-                navLogo.src = "https://i.ibb.co/fYwdd8h/IMG-20251107-WA0006.jpg";
-                navTitle.innerText = "আব্দুল্লাহ ইলেকট্রিক";
-            }
+            // This function is intentionally left blank.
+            // Per user request, the main app header (logo and title) should remain static
+            // and not change based on the selected shop. The static HTML already has the correct values.
         }
 
         function loadShopList() {
